@@ -1,0 +1,42 @@
+<app-nav></app-nav>
+  <div id="search">
+    <div class="uniprot">
+      <h3 class="title"> Uniprot Entry</h3>
+      <input placeholder="Uniprot entry code" type="text" name="unp" [(ngModel)]="uniprotId">
+      <button class="button" routerLink="/reupro/{{uniprotId}}" routerLinkActive="active">   <img class="icon" src= "https://svgsilh.com/svg/35251-00709b.svg" width="15px"></button>
+    </div>
+    <div class="rpUniprot">
+      <h3 class="title"> RepeatsDb Uniprot Entries </h3>
+      <br>
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Search" style="width: 300px;"  [(ngModel)]="searchTerm">
+      </div>
+      <ul>
+        <div *ngFor="let unp of uniprotList | unpFilter: searchTerm; index as i" routerLink="/reupro/{{unp}}" routerLinkActive="active">
+          <div *ngIf="i < 10">
+            {{ unp }}
+          </div>
+
+        </div>
+      </ul>
+    </div>
+  </div>
+
+<div class="msaUniprot">
+  <h3 class="title"> Multiple Sequence Alignment</h3>
+  <br>
+
+  <label (click)="change(uniprotId)" for="uniprot"><a>{{uniprotId}}</a></label> <br>
+
+
+  <mb-sqv-lib [inp]="this.input">
+  </mb-sqv-lib>
+
+
+  <label for="uniprot">A1E266</label> <br>
+  <label for="uniprot">Q4G1L2</label> <br>
+  <label for="uniprot">D0VWX3</label> <br>
+  <label for="uniprot">P17778</label> <br>
+  <label for="uniprot">Q9XZ31</label> <br>
+
+</div>

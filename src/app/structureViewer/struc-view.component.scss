@@ -1,0 +1,37 @@
+#litemol {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+::ng-deep {
+
+  div.lm-layout-region.lm-layout-right {
+    display: none;
+  }
+
+  div.lm-layout-hide-top.lm-layout-hide-bottom.lm-layout-hide-left {
+    width: 100%;
+    height: 100%;
+  }
+
+  div.lm-layout-region.lm-layout-main {
+    width: 100%;
+    height: 100%;
+  }
+
+  .lm-plugin {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: auto !important;
+    right: auto !important;
+    width: 100%;
+    height: 100%;
+  }
+
+  div.lm-plugin-content.lm-layout-expanded {
+    z-index: 9999;
+  }
+
+}

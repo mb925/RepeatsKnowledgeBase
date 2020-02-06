@@ -1,0 +1,99 @@
+<app-nav></app-nav>
+
+<div id="appWrap" class="transition">
+
+  <div id="page2" class="page transition">
+
+<div id="appRp">
+  <div id="reupro">
+
+    <div class="absolute_wrap" id="left">
+
+      <div class="fixed_top">
+
+        <span>
+          PDB:
+        </span>
+
+        <input placeholder="Start" type="text" name="start" [(ngModel)]="startUsr">
+
+        <input placeholder="End" type="text" name="end" [(ngModel)]="endUsr">
+        <i class="fa fa-exchange" aria-hidden="true"></i>
+        <span>
+          Uniprot: [{{stUnp}}], [{{endUnp}}]
+        </span>
+
+        <button title="add custom" (click)="drawCustom()">
+          <i class="fa fa-plus-circle" aria-hidden="true"></i>
+        </button>
+
+        <button title="remove custom" (click)="removeCustom('last')">
+          <i class="fa fa-minus-circle" aria-hidden="true"></i>
+        </button>
+
+        <button title="remove all custom" (click)="removeCustom('all')">
+          <i class="fa fa-undo" aria-hidden="true"></i>
+        </button>
+
+      </div>
+
+      <div class="scrollable_wrap">
+
+        <div id="fv">
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="absolute_wrap" id="right">
+
+      <div class="fixed_top">
+
+        <button  *ngIf="fileJson">
+          <a [href]="fileJson" title="download json" download="{{this.uniprotId}}.json">
+            <i class="fa fa-download" aria-hidden="true">
+            </i>
+          </a>
+        </button>
+        <button  *ngIf="multifasta">
+          <a [href]="multifasta" title="download multifasta" download="multifasta.txt">
+            <i class="fa fa-arrow-circle-down" aria-hidden="true">
+            </i>
+          </a>
+        </button>
+        <button (click)="eraseAll()">
+          <i title="erase all" class="fa fa-ban" aria-hidden="true"></i>
+        </button>
+
+      </div>
+
+      <div class="scrollable_wrap">
+
+        <app-stv>
+        </app-stv>
+
+        <div id="sequence_viewer">
+
+          <mb-sqv-lib [inp]="this.input">
+          </mb-sqv-lib>
+
+          <select (change)="selectChangeHandler($event)">
+            <option [value]="coloration" *ngFor="let coloration of colorations">
+              {{coloration}}
+            </option>
+          </select>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+  </div>
+
+</div>
+

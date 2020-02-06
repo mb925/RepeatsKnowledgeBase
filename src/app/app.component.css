@@ -1,0 +1,120 @@
+::ng-deep body {
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+::ng-deep .fa {
+  color: steelblue;
+}
+
+
+/*::ng-deep body {*/
+/*  margin: 0;*/
+/*  padding: 0;*/
+/*  overflow: hidden;*/
+/*}*/
+
+/*#appWrap {*/
+/*  position: relative;*/
+/*  height: 100vh;*/
+/*  width: 200vw;*/
+/*  overflow: hidden;*/
+/*}*/
+
+/*#appWrap:after {*/
+/*  content: "";*/
+/*  display: table;*/
+/*  clear: both;*/
+/*}*/
+
+/*.page {*/
+/*  position: relative;*/
+/*  width: 100vw;*/
+/*  height: 100vh;*/
+/*  float: left;*/
+/*}*/
+
+/*#page1 {*/
+/*  z-index: 999;*/
+/*}*/
+
+/*.transition {*/
+/*  transition: transform 0.5s ease-in-out,*/
+/*              width 0.25s ease-in-out;*/
+/*  -webkit-transition: transform 0.5s ease-in-out,*/
+/*                      width 0.25s ease-in-out;*/
+/*  -moz-transition: transform 0.5s ease-in-out,*/
+/*                    width 0.25s ease-in-out;*/
+/*  -ms-transition: transform 0.5s ease-in-out,*/
+/*                  width 0.25s ease-in-out;*/
+/*}*/
+
+/*#toggleMenu {*/
+/*  position: absolute;*/
+/*  display: block;*/
+/*  width: 2rem;*/
+/*  height: 2rem;*/
+/*  top: 0;*/
+/*  right: -2rem;*/
+/*  padding: 0.5rem;*/
+/*  box-sizing: border-box;*/
+/*  background-color: cadetblue;*/
+/*}*/
+
+/*app-alignment {*/
+/*  position: relative;*/
+/*  display: block;*/
+/*  width: 100%;*/
+/*  height: 100%;*/
+/*}*/
+
+/*#page2 .fixed_top {*/
+/*  position: relative;*/
+/*  width: 100%;*/
+/*  height: 2rem;*/
+/*  line-height: 2rem;*/
+/*  padding: 1rem;*/
+/*  box-sizing: border-box;*/
+/*}*/
+
+/*#page2 .fixed_top label {*/
+/*  position: absolute;*/
+/*  display: block;*/
+/*  right: 0;*/
+/*}*/
+
+/*app-reupro {*/
+/*  position: relative;*/
+/*  display: block;*/
+/*  width: 100%;*/
+/*  height: 100%;*/
+/*  padding-top: 2rem;*/
+/*  box-sizing: border-box;*/
+/*}*/
+
+/*input {*/
+/*  display: none;*/
+/*}*/
+
+/*input[id="uniprot"]:checked ~ #appWrap {*/
+/*  -ms-transform: translateX(-33vw);*/
+/*  -webkit-transform: translateX(-33vw);*/
+/*  transform: translateX(-33vw);*/
+/*}*/
+
+/*input[id="uniprot"]:checked ~ #appWrap {*/
+/*  width: 133vw !important;*/
+/*}*/
+
+/*input[id="uniprot"]:checked ~ #appWrap #page1 {*/
+/*  width: 33vw !important;*/
+/*}*/
+
+/*input[id="open"]:checked ~ #appWrap #page1 {*/
+/*  -ms-transform: translateX(33vw);*/
+/*  -webkit-transform: translateX(33vw);*/
+/*  transform: translateX(33vw);*/
+/*}*/
+

@@ -1,0 +1,173 @@
+
+#appRp {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+#reupro {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  font-family: "Helvetica neue",Helvetica,Verdana,Nimbus Sans,sans-serif;
+}
+
+.absolute_wrap {
+  width: 100%;
+  position: absolute;
+  top: 0;
+  height: 100%;
+  z-index: 1;
+  overflow: hidden;
+}
+
+#left {
+  width: 50%;
+  left: 0;
+  background-color: white;
+}
+
+#right {
+  width: 50%;
+  left: 50%;
+  background-color: #efefef;
+}
+
+.fixed_top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4rem;
+  box-sizing: border-box;
+  text-align: center;
+  z-index: 999;
+  background-color: #efefef;
+  padding: 8px;
+}
+
+.fixed_top input {
+  display: inline-block;
+  font-size: 0.75rem;
+  margin-right: 0.5rem;
+  width: 3rem;
+}
+
+.fixed_top span {
+  display: inline-block;
+  font-size: 0.75rem;
+  margin-right: 0.5rem;
+}
+
+.scrollable_wrap {
+  position: relative;
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+}
+
+.scrollable_wrap::-webkit-scrollbar {
+  display: none;
+}
+
+app-stv {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 50%;
+}
+
+#sequence_viewer {
+  padding-top: 30px;
+  padding-bottom: 135px;
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+
+mb-sqv-lib {
+  position: relative;
+  width: 100%;
+  height: auto;
+  display: block;
+  margin-bottom: 30px;
+}
+
+::ng-deep .fa.fa-external-link-square {
+  margin: 10px;
+}
+::ng-deep .fa.fa-external-link {
+  margin-left: 10px;
+}
+::ng-deep .fa.fa-exchange {
+  margin-right: 10px;
+}
+
+button {
+  background-color: #cfe8ef;
+  border: none;
+  padding: 2px 5px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+button:hover {
+  background-color: #a5d5e3;
+}
+
+select {
+  background-color: #cfe8ef;
+  border: none;
+  padding: 2px 5px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  margin: 0px 2px 20px 2px;
+  cursor: pointer;
+  border-radius: 2px;
+  color: #00709b;
+}
+
+
+::ng-deep #svgContent {
+  padding-bottom: 150px;
+}
+
+span {
+  color: #00709b;
+}
+
+#appWrap {
+  position: relative;
+  height: 100vh;
+  width: 200vw;
+  overflow: hidden;
+}
+
+#appWrap:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.page {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  float: left;
+}
+
+input {
+  padding: 2px 5px;
+}
