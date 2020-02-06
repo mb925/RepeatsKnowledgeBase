@@ -153,6 +153,8 @@ export class ReuproComponent implements OnInit, AfterViewChecked {
 
       this.featureList = featureList;
       this.featureViewer.addFeatures(featureList);
+      document.getElementsByClassName('loader')[0].className = '';
+      document.getElementsByClassName('loaderMsg')[0].className = '';
       this.featureViewer.onRegionSelected(r => this.updateTools(r));
       document.querySelectorAll('.fa-paint-brush')
         .forEach(item =>  item.addEventListener('click', () => this.paint(event)));

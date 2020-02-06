@@ -136,7 +136,7 @@ export class FeatureViewerModel {
 
     let label = `u-${pdb}-${chain}`;
 
-
+    // insertions
     if (feature !== 'units' && data.length > 0) {
       for (const elem of data) {
         elem.color = this.colorsHex.insertions;
@@ -144,7 +144,8 @@ export class FeatureViewerModel {
       label = `i-${pdb}-${chain}`;
     }
     let flag = true;
-    if (data.length > 1) {
+    // units
+    if (feature === 'units' && data.length > 1) {
 
       for (const elem of data) {
         if (flag) {

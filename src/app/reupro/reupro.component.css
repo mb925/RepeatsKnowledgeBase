@@ -171,3 +171,32 @@ span {
 input {
   padding: 2px 5px;
 }
+
+
+.loader {
+  position: absolute;
+  top: 20%;
+  left: 38%;
+  width: 100px;
+  height: 100px;
+  border: 3px solid rgba(255,255,255,.3);
+  border-radius: 50%;
+  border-top-color: steelblue;
+  animation: spin 1s ease-in-out infinite;
+  -webkit-animation: spin 1s ease-in-out infinite;
+}
+
+.loaderMsg {
+  position: absolute;
+  top: 35%;
+  left: 25%;
+  color: steelblue;
+
+}
+
+@keyframes spin {
+  to { -webkit-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+  to { -webkit-transform: rotate(360deg); }
+}
