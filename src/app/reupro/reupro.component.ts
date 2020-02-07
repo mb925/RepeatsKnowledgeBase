@@ -227,7 +227,6 @@ export class ReuproComponent implements OnInit, AfterViewChecked {
 
   drawCustom() {
 
-
     if (this.featureList.length <= 0) {
       Log.w(1, 'nothing to draw on.');
       return;

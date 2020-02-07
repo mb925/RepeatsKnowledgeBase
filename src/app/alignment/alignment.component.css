@@ -32,12 +32,15 @@ body {
   width: 95%;
   padding: 10px;
   margin: 30px;
-  text-align: center;
   overflow-y: auto;
 }
 
 .titleMsa {
   color: #6d5188;
+}
+
+.center {
+  text-align: center;
 }
 
 button {
