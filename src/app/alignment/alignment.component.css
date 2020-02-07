@@ -21,14 +21,24 @@ body {
   padding: 10px;
   margin: 30px;
 }
+
+.unpList{
+  overflow-y: auto;
+  height: 200px;
+}
+
 .msaUniprot {
-  color: #efefef;
-  background-color: #9d4a4d;
+  background-color: #DCB8CB;
   width: 95%;
   padding: 10px;
   margin: 30px;
+  text-align: center;
+  overflow-y: auto;
 }
 
+.titleMsa {
+  color: #6d5188;
+}
 
 button {
   background-color: #cfe8ef;
@@ -48,4 +58,27 @@ button:hover {
 }
 input {
   padding: 2px 5px;
+}
+
+.loader {
+  margin-left: 47%;
+  width: 100px;
+  height: 100px;
+  border: 3px solid rgba(255,255,255,.3);
+  border-radius: 50%;
+  border-top-color: steelblue;
+  animation: spin 1s ease-in-out infinite;
+  -webkit-animation: spin 1s ease-in-out infinite;
+}
+
+.loaderMsg {
+  margin: 25px 0px;
+  color: steelblue;
+
+}
+@keyframes spin {
+  to { -webkit-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+  to { -webkit-transform: rotate(360deg); }
 }
