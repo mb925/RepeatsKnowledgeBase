@@ -5,7 +5,7 @@ Interface for the curation of multiple TRPs from sequence databases.
 ## 1. Clone and install dependencies
 
 ```
-$ git clone https://gitlab.com/refract-rise/trp-homology.
+$ git clone https://gitlab.com/refract-rise/trp-homology .
 $ nvm use
 $ npm install
 ```
