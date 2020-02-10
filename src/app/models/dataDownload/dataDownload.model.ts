@@ -5,7 +5,8 @@ import {FeatureViewerModel} from '../featureViewer/featureViewer.model';
 
 export class DataDownloadModel {
 
-  json: DataDownload;
+  static dataTxt;
+  static json: DataDownload;
 
   constructor(private sanitizer: DomSanitizer) {
   }
@@ -57,9 +58,9 @@ export class DataDownloadModel {
         }
       }
     }
-    this.json = {uniprot, pdbs};
-    const text =  JSON.stringify(this.json);
-    const blob = new Blob([text], {type: 'application/octet-stream'});
+    DataDownloadModel.json = {uniprot, pdbs};
+    DataDownloadModel.dataTxt =  JSON.stringify(DataDownloadModel.json);
+    const blob = new Blob([DataDownloadModel.dataTxt], {type: 'application/octet-stream'});
     return this.sanitizer.bypassSecurityTrustResourceUrl(window.URL.createObjectURL(blob));
   }
 

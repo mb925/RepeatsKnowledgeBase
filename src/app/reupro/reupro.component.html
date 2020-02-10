@@ -50,15 +50,18 @@
     <div class="absolute_wrap" id="right">
 
       <div class="fixed_top">
+        <button *ngIf="fileJson" title="View json" class="button" routerLink="/download" routerLinkActive="active">
+          <img class="icon" src= "https://svgsilh.com/svg/1699614-00709b.svg" width="15px">
+        </button>
 
         <button  *ngIf="fileJson">
-          <a [href]="fileJson" title="download json" download="{{this.uniprotId}}.json">
+          <a [href]="fileJson" title="Download json" download="{{this.uniprotId}}.json">
             <i class="fa fa-download" aria-hidden="true">
             </i>
           </a>
         </button>
         <button  *ngIf="multifasta">
-          <a [href]="multifasta" title="download multifasta" download="multifasta.txt">
+          <a [href]="multifasta" title="Download multifasta" download="multifasta.txt">
             <i class="fa fa-arrow-circle-down" aria-hidden="true">
             </i>
           </a>

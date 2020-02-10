@@ -1,4 +1,4 @@
-import {AfterViewChecked, ChangeDetectorRef, Component, Injectable, Input, OnInit} from '@angular/core';
+import {AfterViewChecked, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {FeatureViewer} from 'feature-viewer-typescript/lib';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ChainInfo, DataFetcher, PdbInfo, PdbsDict, UniprotInfo} from '../interfaces/dataFetcher.interface';
@@ -57,7 +57,6 @@ export class ReuproComponent implements OnInit, AfterViewChecked {
 
   uniprotId: string;
   currentUniprot: UniprotInfo;
-  currentPdbs: PdbsDict;
   featureList: Array<any>;
   dataFetcher: DataFetcherModel;
   featureViewer: FeatureViewer;

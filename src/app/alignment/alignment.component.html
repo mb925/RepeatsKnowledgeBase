@@ -23,13 +23,26 @@
   </div>
 
 <div class="msaUniprot">
+  <div class="msaList">
+    <h3 class="title"> MSA Uniprot Entries </h3>
+    <br>
+    <div  class ="unpList">
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Search" style="width: 300px;"  [(ngModel)]="MSAsearchTerm">
+      </div>
+      <ul>
+        <div *ngFor="let unp of MSAlist | unpFilter: MSAsearchTerm; index as i" (click)="clickedUnp(unp)">
+          {{ unp }}
+        </div>
+      </ul>
+    </div>
+
+  </div>
   <div class="center">
     <h3 class="titleMsa"> Multiple Sequence Alignment</h3>
     <br>
     <div routerLink="/reupro/{{uniprotMSA}}" routerLinkActive="active">{{uniprotMSA}}</div>
     <br>
-    <div class="loader"></div>
-    <div class="loaderMsg">Retrieving data for Alignment...</div>
   </div>
   <mb-sqv-lib [inp]="this.input"></mb-sqv-lib>
 </div>

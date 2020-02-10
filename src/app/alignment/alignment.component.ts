@@ -21,6 +21,8 @@ export class AlignmentComponent implements OnInit {
   data: any = data;
   uniprotList = [];
   searchTerm: string;
+  MSAsearchTerm: string;
+  MSAlist = ['A1004', 'DD05G', 'HH5GT', '66FGS', 'FSHTT6', '78JYF', '443SFR', '6R5EDS', '3E3RD', '5E5D'];
 
   ngOnInit(): void {
     const url1 = 'http://repeatsdb.bio.unipd.it/ws/search?';
@@ -40,28 +42,31 @@ export class AlignmentComponent implements OnInit {
         for (const key in dt) {
             this.uniprotList.push(dt[key].uniprotid);
         }
-        let rows;
-        // let colors;
-        rows = this.generateInp();
-        document.getElementsByClassName('loader')[0].className = '';
-        document.getElementsByClassName('loaderMsg')[0].innerHTML = '';
-        this.input = {
-          rows,
-          colors: this.data.colors,
-          parameters: {
-            fontSize: '12px',
-            chunkSize: '5',
-            spaceSize: '0',
-            log: 'debug'
-          }
-        };
+
       });
 
 
   }
 
-  generateInp() {
-    this.uniprotMSA = 'P18754';
+  clickedUnp(unp) {
+    let rows;
+    // let colors;
+    rows = this.generateInp(unp);
+    this.input = {
+      rows,
+      colors: this.data.colors,
+      parameters: {
+        fontSize: '12px',
+        chunkSize: '5',
+        spaceSize: '0',
+        log: 'none'
+      }
+    };
+  }
+
+  generateInp(unp) {
+
+    this.uniprotMSA = unp;
     const rows = {};
     // tslint:disable-next-line:forin
     console.log(this.data);
@@ -70,10 +75,6 @@ export class AlignmentComponent implements OnInit {
       const el = {data: this.data.rows[i].data};
       rows[i] = el;
     }
-    // const colors = {};
-    // for (const i in Object.keys(this.data.colors)) {
-    //   colors[i]
-    // }
 
     return rows;
   }

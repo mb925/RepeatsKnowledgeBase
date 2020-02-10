@@ -10,6 +10,7 @@ import {SqvLibModule} from 'sqv-lib';
 import {AppRoutingModule, routingComponents} from './app-routing.module';
 import {NavComponent} from './nav/nav.component';
 import {UnpFilterPipe} from './pipe/unp-filter.pipe';
+import {DownloadComponent} from './download/download.component';
 
 
 
@@ -21,7 +22,8 @@ import {UnpFilterPipe} from './pipe/unp-filter.pipe';
     AppComponent,
     routingComponents,
     NavComponent,
-    UnpFilterPipe
+    UnpFilterPipe,
+    DownloadComponent
   ],
   imports: [
     BrowserModule,
