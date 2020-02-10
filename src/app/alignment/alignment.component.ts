@@ -52,6 +52,7 @@ export class AlignmentComponent implements OnInit {
     let rows;
     // let colors;
     rows = this.generateInp(unp);
+    document.getElementsByClassName('titleMsa')[0].innerHTML = 'Multiple Sequence Alignment';
     this.input = {
       rows,
       colors: this.data.colors,
