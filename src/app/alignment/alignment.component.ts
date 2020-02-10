@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output} from '@angular/core';
-import data from '../models/dataAlignments/output_exon/UniRef90_P18754.json';
+import data from '../models/dataAlignments/output_exon/allDataTest.json';
 
 @Component({
   selector: 'app-alignment',
@@ -22,11 +22,14 @@ export class AlignmentComponent implements OnInit {
   uniprotList = [];
   searchTerm: string;
   MSAsearchTerm: string;
-  MSAlist = ['A1004', 'DD05G', 'HH5GT', '66FGS', 'FSHTT6', '78JYF', '443SFR', '6R5EDS', '3E3RD', '5E5D'];
+  MSAlist = ['O75473', 'Q91VI7', 'HH5GT', '66FGS', '443SFR', '6R5EDS', '3E3RD', '5E5D'];
 
   ngOnInit(): void {
     const url1 = 'http://repeatsdb.bio.unipd.it/ws/search?';
     const url2 = 'query=average_unit:1TO9999999999&collection=uniprot_protein&show=uniprotid';
+    for (const unp of Object.keys(this.data)) {
+      this.MSAlist.push(unp);
+    }
 
     fetch(url1 + url2)
       .then(dt => {
@@ -55,7 +58,7 @@ export class AlignmentComponent implements OnInit {
     document.getElementsByClassName('titleMsa')[0].innerHTML = 'Multiple Sequence Alignment';
     this.input = {
       rows,
-      colors: this.data.colors,
+      colors: this.data[unp].colors,
       parameters: {
         fontSize: '12px',
         chunkSize: '5',
@@ -70,10 +73,8 @@ export class AlignmentComponent implements OnInit {
     this.uniprotMSA = unp;
     const rows = {};
     // tslint:disable-next-line:forin
-    console.log(this.data);
-    // tslint:disable-next-line:forin
-    for (const i in Object.keys(this.data.rows)) {
-      const el = {data: this.data.rows[i].data};
+    for (const i in Object.keys(this.data[unp].rows)) {
+      const el = {data: this.data[unp].rows[i].data};
       rows[i] = el;
     }
 
