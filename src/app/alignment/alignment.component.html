@@ -2,7 +2,7 @@
   <div id="search">
     <div class="uniprot">
       <h3 class="title"> Uniprot Entry</h3>
-      <input placeholder="Uniprot entry code" type="text" name="unp" [(ngModel)]="uniprotId">
+      <input placeholder="Input uniprot entry code" type="text" name="unp" [(ngModel)]="uniprotId">
       <button class="button" routerLink="/reupro/{{uniprotId}}" routerLinkActive="active">   <img class="icon" src= "https://svgsilh.com/svg/35251-00709b.svg" width="15px"></button>
     </div>
     <div class="rpUniprot">
@@ -10,12 +10,13 @@
       <br>
       <div  class ="unpList">
         <div class="form-group">
-          <input type="text" class="form-control" placeholder="Search" style="width: 300px;"  [(ngModel)]="searchTerm">
+          <input type="text" class="form-control" placeholder="Input uniprot entry code" style="width: 300px;"  [(ngModel)]="searchTerm">
         </div>
         <ul>
-          <div *ngFor="let unp of uniprotList | unpFilter: searchTerm; index as i" routerLink="/reupro/{{unp}}" routerLinkActive="active">
+          <button style="display: block" *ngFor="let unp of uniprotList | unpFilter: searchTerm; index as i" routerLink="/reupro/{{unp}}" routerLinkActive="active">
               {{ unp }}
-          </div>
+          </button>
+
         </ul>
       </div>
 
@@ -28,12 +29,12 @@
     <br>
     <div  class ="unpList">
       <div class="form-group">
-        <input type="text" class="form-control" placeholder="Search" style="width: 300px;"  [(ngModel)]="MSAsearchTerm">
+        <input type="text" class="form-control" placeholder="Input uniprot entry code" style="width: 300px;"  [(ngModel)]="MSAsearchTerm">
       </div>
       <ul>
-        <div *ngFor="let unp of MSAlist | unpFilter: MSAsearchTerm; index as i" (click)="clickedUnp(unp)">
+        <button style="display: block" *ngFor="let unp of MSAlist | unpFilter: MSAsearchTerm; index as i" (click)="clickedUnp(unp)">
           {{ unp }}
-        </div>
+        </button>
       </ul>
     </div>
 

@@ -1,0 +1,6 @@
+::ng-deep pre {font-weight: bold; padding: 5px; margin: 5px; background-color: #262625}
+::ng-deep .string { color: #7ab300; }
+::ng-deep .number { color: #eba409; }
+::ng-deep .boolean { color: #3985bf; }
+::ng-deep .null { color: #b85411; }
+::ng-deep .key { color: #c91700; }

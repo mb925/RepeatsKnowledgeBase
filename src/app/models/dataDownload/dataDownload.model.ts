@@ -59,14 +59,13 @@ export class DataDownloadModel {
       }
     }
     DataDownloadModel.json = {uniprot, pdbs};
-    DataDownloadModel.dataTxt =  JSON.stringify(DataDownloadModel.json);
+    DataDownloadModel.dataTxt =  JSON.stringify(DataDownloadModel.json, null, '\t');
     const blob = new Blob([DataDownloadModel.dataTxt], {type: 'application/octet-stream'});
     return this.sanitizer.bypassSecurityTrustResourceUrl(window.URL.createObjectURL(blob));
   }
 
   public getMultifasta(str) {
     const blob = new Blob([str], {type: 'application/octet-stream'});
-    console.log(blob);
     return this.sanitizer.bypassSecurityTrustResourceUrl(window.URL.createObjectURL(blob));
   }
 }
