@@ -14,12 +14,12 @@ import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-reupro',
-  templateUrl: './reupro.component.html',
+  templateUrl: './repKB.component.html',
   styles: ['@import "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css";'],
-  styleUrls: ['./reupro.component.css']
+  styleUrls: ['./repKB.component.css']
 })
 
-export class ReuproComponent implements OnInit, AfterViewChecked {
+export class RepKBComponent implements OnInit, AfterViewChecked {
   constructor(private route: ActivatedRoute,
               private san: DomSanitizer,
               private cdRef: ChangeDetectorRef,
@@ -106,7 +106,7 @@ export class ReuproComponent implements OnInit, AfterViewChecked {
       // new Feature Viewer
       this.currentUniprot = data.uniprots[this.uniprotId];
       delete this.featureViewer;
-      this.featureViewer = new FeatureViewer(this.currentUniprot.sequence, '#fv', ReuproComponent.fvOptions);
+      this.featureViewer = new FeatureViewer(this.currentUniprot.sequence, '#fv', RepKBComponent.fvOptions);
 
       // fill Feature Viewer
       const featureList = [];

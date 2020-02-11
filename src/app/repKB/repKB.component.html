@@ -74,27 +74,20 @@
 
       <div class="scrollable_wrap">
 
-        <app-stv>
-        </app-stv>
+        <app-stv></app-stv>
 
         <div id="sequence_viewer">
-
           <mb-sqv-lib [inp]="this.input">
           </mb-sqv-lib>
-
           <select (change)="selectChangeHandler($event)">
             <option [value]="coloration" *ngFor="let coloration of colorations">
               {{coloration}}
             </option>
           </select>
         </div>
-
       </div>
-
     </div>
-
   </div>
-
 </div>
 
   </div>

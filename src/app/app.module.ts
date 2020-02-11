@@ -3,7 +3,7 @@ import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { AppComponent} from './app.component';
-import { ReuproComponent } from './reupro/reupro.component';
+import { RepKBComponent } from './repKB/repKB.component';
 import { AlignmentComponent } from './alignment/alignment.component';
 import {StrucViewComponent} from './structureViewer/struc-view.component';
 import {SqvLibModule} from 'sqv-lib';
@@ -17,7 +17,7 @@ import {DownloadComponent} from './download/download.component';
 @NgModule({
   declarations: [
     AlignmentComponent,
-    ReuproComponent,
+    RepKBComponent,
     StrucViewComponent,
     AppComponent,
     routingComponents,
