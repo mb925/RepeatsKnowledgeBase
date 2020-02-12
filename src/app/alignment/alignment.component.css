@@ -10,7 +10,7 @@ body {
 
 .uniprot {
   color: #efefef;
-  background-color: rgba(48,102,190,0.8);
+  background-color: rgba(48,102,190,0.7);
   width: 25%;
   padding: 10px;
   margin: 30px;
@@ -18,7 +18,7 @@ body {
 }
 .rpUniprot {
   color: #efefef;
-  background-color: rgba(96,175,255,0.8);
+  background-color: rgba(96,175,255,0.7);
   width: 25%;
   padding: 10px;
   margin: 30px;
@@ -33,14 +33,14 @@ body {
 
 .msaList {
   color: #efefef;
-  background-color: rgba(150,52,132,0.8);
+  background-color: rgba(150,52,132,0.7);
   width: 25%;
   padding: 10px;
   margin: 30px;
 }
 
 .msaUniprot {
-  background-color: #DCB8CB;
+  background-color: rgba(141, 128, 173, 0.4);
   width: 95%;
   padding: 10px;
   margin: 30px;
@@ -49,6 +49,7 @@ body {
 
 .center {
   text-align: center;
+  margin-bottom: 20px;
 }
 
 button {
@@ -71,10 +72,17 @@ button:hover {
 }
 input {
   padding: 2px 5px;
+  width: 140px;
+  margin-left: 40px;
 }
-
 ::-webkit-scrollbar {
   width: 12px;
+}
+
+.iconSearch {
+  width: 15px;
+  margin-right: 5px;
+  margin-left: 40px;
 }
 
 ::-webkit-scrollbar-track {
@@ -93,4 +101,8 @@ input {
   background-color: white;
   width: 0;
   height: 0;
+}
+
+#arrow{
+  padding: 3px;
 }

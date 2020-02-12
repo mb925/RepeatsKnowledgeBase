@@ -1,16 +1,16 @@
 <app-nav></app-nav>
   <div id="search">
     <div class="uniprot">
-      <h3 class="title"> Uniprot Entry</h3>
-      <input placeholder="Input uniprot entry code" type="text" name="unp" [(ngModel)]="uniprotId">
-      <button routerLink="/reupro/{{uniprotId}}" routerLinkActive="active" style="width: 30px;"> <img class="icon" src= "https://svgsilh.com/svg/35251-00709b.svg" width="15px"></button>
+      <h3 class="title"><img class="iconSearch" src="https://svgsilh.com/svg/1093184-00709b.svg"> Uniprot Entry</h3>
+      <input placeholder="Search uniprot..." type="text" name="unp" [(ngModel)]="uniprotId">
+      <button id="arrow" routerLink="/reupro/{{uniprotId}}" routerLinkActive="active" style="width: 30px;"> <img class="icon" src= "https://svgsilh.com/svg/35251-00709b.svg" width="15px"></button>
     </div>
     <div class="rpUniprot">
-      <h3 class="title"> RepeatsDb Uniprot Entries </h3>
+      <h3 class="title"><img class="iconSearch" src="https://svgsilh.com/svg/1093184-00709b.svg"> RepeatsDb</h3>
       <br>
       <div  class ="unpList">
         <div class="form-group">
-          <input type="text" class="form-control" placeholder="Input uniprot entry code" style="width: 300px;"  [(ngModel)]="searchTerm">
+          <input type="text" class="form-control" placeholder="Search uniprot..."  [(ngModel)]="searchTerm">
         </div>
         <ul>
           <button style="display: block" *ngFor="let unp of uniprotList | unpFilter: searchTerm; index as i" routerLink="/repKB/{{unp}}" routerLinkActive="active">
@@ -20,11 +20,11 @@
       </div>
     </div>
     <div class="msaList">
-      <h3 class="title"> MSA Uniprot Entries </h3>
+      <h3 class="title"><img class="iconSearch" src="https://svgsilh.com/svg/1093184-00709b.svg"> MSA</h3>
       <br>
       <div  class ="unpList">
         <div class="form-group">
-          <input type="text" class="form-control" placeholder="Input uniprot entry code" style="width: 300px;"  [(ngModel)]="MSAsearchTerm">
+          <input type="text" class="form-control" placeholder="Search uniprot..."  [(ngModel)]="MSAsearchTerm">
         </div>
         <ul>
           <button style="display: block" *ngFor="let unp of MSAlist | unpFilter: MSAsearchTerm; index as i" (click)="clickedUnp(unp)">
@@ -38,7 +38,6 @@
 <div class="msaUniprot_pre">
   <div class="center">
     <div class="titleMsa"> </div>
-    <br>
     <button class="button_pre" routerLink="/repKB/{{uniprotMSA}}" routerLinkActive="active">{{uniprotMSA}}</button>
     <br>
   </div>
