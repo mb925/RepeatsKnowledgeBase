@@ -22,7 +22,7 @@ export class AlignmentComponent implements OnInit {
   uniprotList = [];
   searchTerm: string;
   MSAsearchTerm: string;
-  MSAlist = ['O75473', 'Q91VI7', 'HH5GT', '66FGS', '443SFR', '6R5EDS', '3E3RD', '5E5D'];
+  MSAlist = [];
 
   ngOnInit(): void {
     const url1 = 'http://repeatsdb.bio.unipd.it/ws/search?';

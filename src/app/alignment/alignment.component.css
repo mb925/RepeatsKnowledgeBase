@@ -45,6 +45,7 @@ body {
   padding: 10px;
   margin: 30px;
   overflow-y: auto;
+  overflow-x: auto;
 }
 
 .center {

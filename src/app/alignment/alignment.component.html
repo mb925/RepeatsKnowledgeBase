@@ -1,16 +1,16 @@
 <app-nav></app-nav>
   <div id="search">
     <div class="uniprot">
-      <h3 class="title"><img class="iconSearch" src="https://svgsilh.com/svg/1093184-00709b.svg"> Uniprot Entry</h3>
-      <input placeholder="Search uniprot..." type="text" name="unp" [(ngModel)]="uniprotId">
-      <button id="arrow" routerLink="/reupro/{{uniprotId}}" routerLinkActive="active" style="width: 30px;"> <img class="icon" src= "https://svgsilh.com/svg/35251-00709b.svg" width="15px"></button>
+      <h3 class="title"><img class="iconSearch" src="https://svgsilh.com/svg/1093184-00709b.svg"> UniProt Entry</h3>
+      <input placeholder="Search UniProt..." type="text" name="unp" [(ngModel)]="uniprotId">
+      <button id="arrow" routerLink="/repKB/{{uniprotId}}" routerLinkActive="active" style="width: 30px;"> <img class="icon" src= "https://svgsilh.com/svg/35251-00709b.svg" width="15px"></button>
     </div>
     <div class="rpUniprot">
       <h3 class="title"><img class="iconSearch" src="https://svgsilh.com/svg/1093184-00709b.svg"> RepeatsDb</h3>
       <br>
       <div  class ="unpList">
         <div class="form-group">
-          <input type="text" class="form-control" placeholder="Search uniprot..."  [(ngModel)]="searchTerm">
+          <input type="text" class="form-control" placeholder="Search UniProt..."  [(ngModel)]="searchTerm">
         </div>
         <ul>
           <button style="display: block" *ngFor="let unp of uniprotList | unpFilter: searchTerm; index as i" routerLink="/repKB/{{unp}}" routerLinkActive="active">
@@ -24,7 +24,7 @@
       <br>
       <div  class ="unpList">
         <div class="form-group">
-          <input type="text" class="form-control" placeholder="Search uniprot..."  [(ngModel)]="MSAsearchTerm">
+          <input type="text" class="form-control" placeholder="Search UniProt..."  [(ngModel)]="MSAsearchTerm">
         </div>
         <ul>
           <button style="display: block" *ngFor="let unp of MSAlist | unpFilter: MSAsearchTerm; index as i" (click)="clickedUnp(unp)">

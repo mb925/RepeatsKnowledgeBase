@@ -83,7 +83,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   countCustom = 0;
 
   ngOnInit(): void {
-    this.updateView(this.uniprotId);
+    this.updateView(this.uniprotId.toUpperCase());
   }
 
   public updateView(id) {
