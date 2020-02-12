@@ -11,17 +11,13 @@
 
       <div class="fixed_top">
 
-        <span>
-          PDB:
-        </span>
+        <span>PDB:</span>
 
-        <input placeholder="Start" type="text" name="start" [(ngModel)]="startUsr">
+        <input placeholder="Start" type="text" name="start" [(ngModel)]="startUsrPdb">
 
-        <input placeholder="End" type="text" name="end" [(ngModel)]="endUsr">
+        <input placeholder="End" type="text" name="end" [(ngModel)]="endUsrPdb">
         <i class="fa fa-exchange" aria-hidden="true"></i>
-        <span>
-          Uniprot: [{{stUnp}}], [{{endUnp}}]
-        </span>
+        <span>UniProt: [{{stUnp}}], [{{endUnp}}]</span>
 
         <button title="add custom" (click)="drawCustom()">
           <i class="fa fa-plus-circle" aria-hidden="true"></i>
@@ -34,6 +30,16 @@
         <button title="remove all custom" (click)="removeCustom('all')">
           <i class="fa fa-undo" aria-hidden="true"></i>
         </button>
+
+        <br>
+
+        <span>UniProt:</span>
+
+        <input placeholder="Start" type="text" name="start" [(ngModel)]="startUsrUnp">
+
+        <input placeholder="End" type="text" name="end" [(ngModel)]="endUsrUnp">
+        <i class="fa fa-exchange" aria-hidden="true"></i>
+        <span>PDB: [{{stPdb}}], [{{endPdb}}]</span>
 
       </div>
 

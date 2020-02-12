@@ -152,7 +152,7 @@ export class DataFetcherModel {
       }
       // insert pdb structure inside pdbs object
       this.data.pdbs[pdb.pdb] = pdbInfo;
-      console.log(this.data.pdbs[pdb.pdb]);
+
     }
     // insert uniprot object inside uniprots dict
     this.data.uniprots[unpSequence.id] = uniprotInfo;

@@ -64,10 +64,14 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   fileJson;
   multifasta;
   multicustom = [];
-  startUsr;
-  endUsr;
+  startUsrPdb;
+  endUsrPdb;
+  startUsrUnp;
+  endUsrUnp;
   stUnp = 'n/a';
   endUnp = 'n/a';
+  stPdb = 'n/a';
+  endPdb = 'n/a';
   data;
   pdb;
   chain;
@@ -323,11 +327,13 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       this.updateView(this.event);
     }
 
+    //PDB TO UNIPROT
     if (this.pdb !== undefined && this.data.pdbs[this.pdb] !== undefined) {
       const toUnp = this.data.pdbs[this.pdb].chains[this.chain].aut_to_unp;
 
-      if (this.startUsr in toUnp) {
-        this.stUnp = toUnp[this.startUsr];
+
+      if (this.startUsrPdb in toUnp) {
+        this.stUnp = toUnp[this.startUsrPdb];
         if (this.stUnp[0] === 'u') {
           this.stUnp = 'n/a';
         }
@@ -337,8 +343,8 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         this.stUnp = 'n/a';
         this.cdRef.detectChanges();
       }
-      if (this.endUsr in toUnp) {
-        this.endUnp = toUnp[this.endUsr];
+      if (this.endUsrPdb in toUnp) {
+        this.endUnp = toUnp[this.endUsrPdb];
         if (this.endUnp[0] === 'u') {
           this.endUnp = 'n/a';
         }
@@ -352,6 +358,39 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       // no user input
       this.stUnp = 'n/a';
       this.endUnp = 'n/a';
+    }
+
+    // UNIPROT TO PDB
+    if (this.pdb !== undefined && this.data.pdbs[this.pdb] !== undefined) {
+      const toPdb = this.data.pdbs[this.pdb].chains[this.chain].unp_to_aut;
+
+
+      if (this.startUsrUnp in toPdb) {
+        this.stPdb = toPdb[this.startUsrUnp];
+        if (this.stPdb[0] === 'u') {
+          this.stPdb = 'n/a';
+        }
+        this.cdRef.detectChanges();
+      } else {
+        // user input outside convObj
+        this.stPdb = 'n/a';
+        this.cdRef.detectChanges();
+      }
+      if (this.endUsrUnp in toPdb) {
+        this.endPdb = toPdb[this.endUsrUnp];
+        if (this.endPdb[0] === 'u') {
+          this.endPdb = 'n/a';
+        }
+        this.cdRef.detectChanges();
+      } else {
+        // user input outside convObj
+        this.endPdb = 'n/a';
+        this.cdRef.detectChanges();
+      }
+    } else {
+      // no user input
+      this.stPdb = 'n/a';
+      this.endPdb = 'n/a';
     }
   }
 

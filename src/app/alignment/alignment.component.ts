@@ -8,16 +8,12 @@ import data from '../models/dataAlignments/output_exon/allDataTest.json';
 })
 
 
-
-
 export class AlignmentComponent implements OnInit {
   @Output() eventClicked = new EventEmitter<Event>();
   uniprotId;
   uniprotMSA;
-
   input;
   rows;
-
   data: any = data;
   uniprotList = [];
   searchTerm: string;
@@ -33,7 +29,6 @@ export class AlignmentComponent implements OnInit {
 
     fetch(url1 + url2)
       .then(dt => {
-
         if (!dt.ok) {
           throw new Error(dt.statusText);
         }
@@ -45,15 +40,11 @@ export class AlignmentComponent implements OnInit {
         for (const key in dt) {
             this.uniprotList.push(dt[key].uniprotid);
         }
-
       });
-
-
   }
 
   clickedUnp(unp) {
     let rows;
-    // let colors;
     rows = this.generateInp(unp);
     document.getElementsByClassName('msaUniprot_pre')[0].className = 'msaUniprot';
     document.getElementsByClassName('button_pre')[0].className = '';
@@ -79,8 +70,6 @@ export class AlignmentComponent implements OnInit {
       const el = {data: this.data[unp].rows[i].data};
       rows[i] = el;
     }
-
     return rows;
   }
-
 }

@@ -1,6 +1,6 @@
 export class Log {
 
-  static log = 3;
+  static log = 0; // raise this value to see logs : 0,1,2,3
 
   static s(lvl: number) {
     Log.log = lvl;
