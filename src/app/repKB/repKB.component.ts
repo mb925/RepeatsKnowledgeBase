@@ -168,7 +168,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       this.featureList = featureList;
       this.featureViewer.addFeatures(featureList);
       document.getElementsByClassName('loader')[0].className = '';
-      document.getElementsByClassName('loaderMsg')[0].className = '';
+      document.getElementsByClassName('loaderMsg')[0].innerHTML = '';
       this.featureViewer.onRegionSelected(r => this.updateTools(r));
       document.querySelectorAll('.fa-paint-brush')
         .forEach(item =>  item.addEventListener('click', () => this.paint(event)));
@@ -339,18 +339,18 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       this.updateView(this.event);
     }
 
-    this.formGroup.controls['startPdb'].disable()
-    this.formGroup.controls['endPdb'].disable()
-    this.formGroup.controls['startUnp'].disable()
-    this.formGroup.controls['endUnp'].disable()
+    // this.formGroup.controls['startPdb'].disable()
+    // this.formGroup.controls['endPdb'].disable()
+    // this.formGroup.controls['startUnp'].disable()
+    // this.formGroup.controls['endUnp'].disable()
 
     //PDB TO UNIPROT
     if (this.pdb !== undefined && this.data.pdbs[this.pdb] !== undefined) {
 
-      this.formGroup.controls['startPdb'].enable()
-      this.formGroup.controls['endPdb'].enable()
-      this.formGroup.controls['startUnp'].enable()
-      this.formGroup.controls['endUnp'].enable()
+      // this.formGroup.controls['startPdb'].enable()
+      // this.formGroup.controls['endPdb'].enable()
+      // this.formGroup.controls['startUnp'].enable()
+      // this.formGroup.controls['endUnp'].enable()
 
       const toUnp = this.data.pdbs[this.pdb].chains[this.chain].aut_to_unp;
 

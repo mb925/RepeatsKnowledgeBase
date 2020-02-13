@@ -1,103 +1,99 @@
 <app-nav></app-nav>
 
-<div id="appWrap" class="transition">
+  <div class="page">
 
-  <div id="page2" class="page transition">
+    <div id="appRp">
+      <div id="reupro">
 
-<div id="appRp">
-  <div id="reupro">
+        <div class="absolute_wrap" id="left">
 
-    <div class="absolute_wrap" id="left">
+          <div class="fixed_top">
+            <form [formGroup]="formGroup">
+              <div>
+                <button title="add custom" (click)="drawCustom()">
+                  <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                </button>
 
-      <div class="fixed_top">
-        <form [formGroup]="formGroup">
-          <div>
-            <button title="add custom" (click)="drawCustom()">
-              <i class="fa fa-plus-circle" aria-hidden="true"></i>
-            </button>
+                <button title="remove custom" (click)="removeCustom('last')">
+                  <i class="fa fa-minus-circle" aria-hidden="true"></i>
+                </button>
 
-            <button title="remove custom" (click)="removeCustom('last')">
-              <i class="fa fa-minus-circle" aria-hidden="true"></i>
-            </button>
+                <button title="remove all custom" (click)="removeCustom('all')">
+                  <i class="fa fa-undo" aria-hidden="true"></i>
+                </button>
+              </div>
+              <div class="forms">
+                <div>
+                  <span style="width: 44px;">PDB:</span>
+                  <input placeholder="Start" type="text" formControlName="startPdb" [(ngModel)]="startUsrPdb">
+                  <input placeholder="End" type="text" formControlName="endPdb" [(ngModel)]="endUsrPdb">
+                  <i class="fa fa-exchange" aria-hidden="true"></i>
+                  <span>UniProt:  &nbsp;&nbsp;  [{{stUnp}}]  , [{{endUnp}}]</span>
+                </div>
 
-            <button title="remove all custom" (click)="removeCustom('all')">
-              <i class="fa fa-undo" aria-hidden="true"></i>
-            </button>
+                <div>
+                  <span>UniProt:</span>
+                  <input placeholder="Start" type="text" formControlName="startUnp" [(ngModel)]="startUsrUnp">
+                  <input placeholder="End" type="text" formControlName="endUnp" [(ngModel)]="endUsrUnp">
+                  <i class="fa fa-exchange" aria-hidden="true"></i>
+                  <span>PDB: &nbsp; &nbsp; &nbsp; &nbsp;[{{stPdb}}] , [{{endPdb}}]</span>
+                </div>
+              </div>
+            </form>
           </div>
-          <div class="forms">
-            <div>
-              <span style="width: 44px;">PDB:</span>
-              <input placeholder="Start" type="text" formControlName="startPdb" [(ngModel)]="startUsrPdb">
-              <input placeholder="End" type="text" formControlName="endPdb" [(ngModel)]="endUsrPdb">
-              <i class="fa fa-exchange" aria-hidden="true"></i>
-              <span>UniProt:  &nbsp;&nbsp;  [{{stUnp}}]  , [{{endUnp}}]</span>
+
+          <div class="scrollable_wrap">
+            <div class="loader"></div>
+            <div class="loaderMsg">Retrieving data for Feature-Viewer ... </div>
+            <div id="fv">
             </div>
 
-            <div>
-              <span>UniProt:</span>
-              <input placeholder="Start" type="text" formControlName="startUnp" [(ngModel)]="startUsrUnp">
-              <input placeholder="End" type="text" formControlName="endUnp" [(ngModel)]="endUsrUnp">
-              <i class="fa fa-exchange" aria-hidden="true"></i>
-              <span>PDB: &nbsp; &nbsp; &nbsp; &nbsp;[{{stPdb}}] , [{{endPdb}}]</span>
+          </div>
+
+        </div>
+
+        <div class="absolute_wrap" id="right">
+
+          <div class="fixed_top">
+            <button *ngIf="fileJson" title="View json" class="button" routerLink="/download" routerLinkActive="active">
+              <img class="icon" src= "https://svgsilh.com/svg/1699614-00709b.svg" width="15px">
+            </button>
+
+            <button  *ngIf="fileJson">
+              <a [href]="fileJson" title="Download json" download="{{this.uniprotId}}.json">
+                <i class="fa fa-download" aria-hidden="true">
+                </i>
+              </a>
+            </button>
+            <button  *ngIf="multifasta">
+              <a [href]="multifasta" title="Download multifasta" download="multifasta.txt">
+                <i class="fa fa-arrow-circle-down" aria-hidden="true">
+                </i>
+              </a>
+            </button>
+            <button (click)="eraseAll()">
+              <i title="erase all" class="fa fa-ban" aria-hidden="true"></i>
+            </button>
+
+          </div>
+
+          <div class="scrollable_wrap">
+
+            <app-stv></app-stv>
+
+            <div id="sequence_viewer">
+              <mb-sqv-lib [inp]="this.input">
+              </mb-sqv-lib>
+              <select (change)="selectChangeHandler($event)">
+                <option [value]="coloration" *ngFor="let coloration of colorations">
+                  {{coloration}}
+                </option>
+              </select>
             </div>
           </div>
-        </form>
-      </div>
-
-      <div class="scrollable_wrap">
-        <div class="loader"></div>
-        <div class="loaderMsg">Retrieving data for Feature Viewer...</div>
-        <div id="fv">
-        </div>
-
-      </div>
-
-    </div>
-
-    <div class="absolute_wrap" id="right">
-
-      <div class="fixed_top">
-        <button *ngIf="fileJson" title="View json" class="button" routerLink="/download" routerLinkActive="active">
-          <img class="icon" src= "https://svgsilh.com/svg/1699614-00709b.svg" width="15px">
-        </button>
-
-        <button  *ngIf="fileJson">
-          <a [href]="fileJson" title="Download json" download="{{this.uniprotId}}.json">
-            <i class="fa fa-download" aria-hidden="true">
-            </i>
-          </a>
-        </button>
-        <button  *ngIf="multifasta">
-          <a [href]="multifasta" title="Download multifasta" download="multifasta.txt">
-            <i class="fa fa-arrow-circle-down" aria-hidden="true">
-            </i>
-          </a>
-        </button>
-        <button (click)="eraseAll()">
-          <i title="erase all" class="fa fa-ban" aria-hidden="true"></i>
-        </button>
-
-      </div>
-
-      <div class="scrollable_wrap">
-
-        <app-stv></app-stv>
-
-        <div id="sequence_viewer">
-          <mb-sqv-lib [inp]="this.input">
-          </mb-sqv-lib>
-          <select (change)="selectChangeHandler($event)">
-            <option [value]="coloration" *ngFor="let coloration of colorations">
-              {{coloration}}
-            </option>
-          </select>
         </div>
       </div>
     </div>
-  </div>
-</div>
-
-  </div>
 
 </div>
 

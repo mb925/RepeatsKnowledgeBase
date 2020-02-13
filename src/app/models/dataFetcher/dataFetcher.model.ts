@@ -164,7 +164,6 @@ export class DataFetcherModel {
   private autToUnpDict(residues, obj) {
     // building aut_to_unp{} key: aut, value: unp
     let tmp;
-    console.log(residues);
 
     for (const res of residues) {
 
