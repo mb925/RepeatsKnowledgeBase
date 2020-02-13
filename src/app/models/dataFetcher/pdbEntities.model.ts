@@ -23,7 +23,6 @@ export class PdbEntitiesModel extends QueryExtractor {
     }
 
     const res = await this.query(`${pdb}${chain}&collection=repeat_region&show=ALL`);
-
     if (!(res instanceof Array)) {
        Log.w(1, 'request to RepeatsDB failed.');
        return undefined;

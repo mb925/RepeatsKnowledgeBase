@@ -164,6 +164,8 @@ export class DataFetcherModel {
   private autToUnpDict(residues, obj) {
     // building aut_to_unp{} key: aut, value: unp
     let tmp;
+    console.log(residues);
+
     for (const res of residues) {
 
       const unpRes = res.residue_number + obj.shift;
@@ -185,7 +187,9 @@ export class DataFetcherModel {
     for (let unpResidue = 1; unpResidue <= sequence.length; unpResidue++) {
       residueNumber = +unpResidue - obj.shift;
       residue = residues.find(i => i.residue_number === residueNumber);
-      if (residue !== undefined) {
+
+
+      if (residue !== undefined && obj.aut_to_unp[residue.author_residue_number][0] !== 'u') {
         obj.unp_to_aut[unpResidue] = residue.author_residue_number;
       } else {
         obj.unp_to_aut[unpResidue] = '-';
