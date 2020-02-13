@@ -70,9 +70,9 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   endUsrPdb;
   startUsrUnp;
   endUsrUnp;
-  stUnp = ' - ';
-  endUnp = ' - ';
-  stPdb = ' - ';
+  stUnp = '-';
+  endUnp = '-';
+  stPdb = '-';
   endPdb = '-';
   data;
   pdb;
@@ -87,17 +87,15 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   actualPdb;
   actualUniprot;
   countCustom = 0;
-  alert;
+  alert = "Click on a pdb to start";
+  error = "";
+  disStartPdb= true;
+  disEndPdb= true;
+  disStartUnp= true;
+  disEndUnp= true;
 
   ngOnInit(): void {
     this.updateView(this.uniprotId.toUpperCase());
-
-    this.formGroup = this.formBuilder.group({
-      startPdb: [{value: '', disabled : false}],
-      endPdb: [{value: '', disabled : false}],
-      startUnp: [{value: '', disabled : false}],
-      endUnp: [{value: '', disabled : false}]
-    });
   }
 
   public updateView(id) {
@@ -240,19 +238,26 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   }
 
   drawCustom() {
-
+    this.error = '';
     if (this.featureList.length <= 0) {
       Log.w(1, 'nothing to draw on.');
       return;
     }
 
-    if (!this.stUnp || !this.endUnp) {
-      Log.w(1, 'impossible to find user inputs.');
+    if (this.disStartPdb === null && (this.stUnp === '-' || this.endUnp === '-')) {
+      this.error = 'impossible to find user inputs';
+      return;
+    } else if (this.disStartUnp === null && (this.startUsrUnp === undefined || this.endUsrUnp === undefined)) {
+      this.error = 'impossible to find user inputs';
       return;
     }
 
+    if (this.disStartPdb) {
+      this.stUnp = this.startUsrUnp;
+      this.endUnp = this.endUsrUnp;
+    }
 
-    if (this.stUnp !== ' - ' || this.endUnp !== ' - ') {
+    if (this.stUnp !== '-' || this.endUnp !== '-') {
       this.countCustom += 1;
     }
 
@@ -276,7 +281,6 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     }
 
     const dt = JSON.stringify(this.multicustom);
-    console.log(document.getElementById('usr'));
     if (this.countCustom > 1) {
       document.getElementById('usr').innerHTML = `<a id='usr'><i data-id='usr' data-dt = '${dt}' class='fa fa-paint-brush'
        aria-hidden='true'></i></a>`;
@@ -339,21 +343,24 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       this.updateView(this.event);
     }
 
-    // this.formGroup.controls['startPdb'].disable()
-    // this.formGroup.controls['endPdb'].disable()
-    // this.formGroup.controls['startUnp'].disable()
-    // this.formGroup.controls['endUnp'].disable()
-
     //PDB TO UNIPROT
     if (this.pdb !== undefined && this.data.pdbs[this.pdb] !== undefined) {
 
-      // this.formGroup.controls['startPdb'].enable()
-      // this.formGroup.controls['endPdb'].enable()
-      // this.formGroup.controls['startUnp'].enable()
-      // this.formGroup.controls['endUnp'].enable()
+      this.alert = "";
+      this.disStartPdb = null;
+      this.disEndPdb = null;
+      this.disStartUnp = null;
+      this.disEndUnp = null;
+
+      if(this.startUsrPdb || this.endUsrPdb) {
+        this.disStartUnp = true;
+        this.disEndUnp = true;
+      } else if (this.startUsrUnp || this.endUsrUnp) {
+        this.disStartPdb = true;
+        this.disEndPdb = true;
+      }
 
       const toUnp = this.data.pdbs[this.pdb].chains[this.chain].aut_to_unp;
-
 
       if (this.startUsrPdb in toUnp) {
         this.stUnp = toUnp[this.startUsrPdb];
@@ -363,24 +370,24 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         this.cdRef.detectChanges();
       } else {
         // user input outside convObj
-        this.stUnp = ' - ';
+        this.stUnp =  '-';
         this.cdRef.detectChanges();
       }
       if (this.endUsrPdb in toUnp) {
         this.endUnp = toUnp[this.endUsrPdb];
         if (this.endUnp[0] === 'u') {
-          this.endUnp = ' - ';
+          this.endUnp =  '-';
         }
         this.cdRef.detectChanges();
       } else {
         // user input outside convObj
-        this.endUnp = ' - ';
+        this.endUnp =  '-';
         this.cdRef.detectChanges();
       }
     } else {
       // no user input
-      this.stUnp = ' - ';
-      this.endUnp = ' - ';
+      this.stUnp =  '-';
+      this.endUnp =  '-';
     }
 
     // UNIPROT TO PDB
@@ -391,29 +398,29 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       if (this.startUsrUnp in toPdb) {
         this.stPdb = toPdb[this.startUsrUnp];
         if (this.stPdb[0] === 'u') {
-          this.stPdb = ' - ';
+          this.stPdb =  '-';
         }
         this.cdRef.detectChanges();
       } else {
         // user input outside convObj
-        this.stPdb = ' - ';
+        this.stPdb =  '-';
         this.cdRef.detectChanges();
       }
       if (this.endUsrUnp in toPdb) {
         this.endPdb = toPdb[this.endUsrUnp];
         if (this.endPdb[0] === 'u') {
-          this.endPdb = ' - ';
+          this.endPdb =  '-';
         }
         this.cdRef.detectChanges();
       } else {
         // user input outside convObj
-        this.endPdb = ' - ';
+        this.endPdb =  '-';
         this.cdRef.detectChanges();
       }
     } else {
       // no user input
-      this.stPdb = ' - ';
-      this.endPdb = ' - ';
+      this.stPdb =  '-';
+      this.endPdb =  '-';
     }
   }
 
