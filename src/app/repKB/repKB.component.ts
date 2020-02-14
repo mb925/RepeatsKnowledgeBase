@@ -66,6 +66,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   fileJson;
   multifasta;
   multicustom = [];
+  lastCustom;
   startUsrPdb;
   endUsrPdb;
   startUsrUnp;
@@ -80,6 +81,8 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   lastClicked;
   input;
   colorations = ['Choose palette', 'clustal']; // add colorations here
+  features = ['Choose feature', 'unit', 'insertion'];
+  feature;
   arrEntry;
   clicked;
   arrEntrySqv;
@@ -107,7 +110,6 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       if (!data) {
         return;
       }
-      console.log(data);
 
       document.getElementById('fv').innerHTML = '';
 
@@ -187,13 +189,16 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   }
 
   generateMultifasta() {
+    if (this.feature === undefined) {
+      return;
+    }
     let multifasta = '';
     for (const e of this.multicustom) {
       let sq = '';
       for (let i = e.x - 1; i <= e.y - 1; i++) {
         sq += this.currentUniprot.sequence[i];
       }
-      multifasta += 'UNIT    ' + e.x + '-' + e.y + '    ' + sq + '\n';
+      multifasta += '>' + this.feature.toUpperCase() + ' ' + e.x + '-' + e.y + '\n' + sq + '\n';
     }
     this.multifasta = this.dataDownload.getMultifasta(multifasta);
   }
@@ -244,11 +249,16 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       return;
     }
 
+    if (this.feature === undefined) {
+      this.error = "Invalid action. Please select a feature."
+      return;
+    }
+
     if (this.disStartPdb === null && (this.stUnp === '-' || this.endUnp === '-')) {
-      this.error = 'impossible to find user inputs';
+      this.error = "Invalid action. Please check the input values.";
       return;
     } else if (this.disStartUnp === null && (this.startUsrUnp === undefined || this.endUsrUnp === undefined)) {
-      this.error = 'impossible to find user inputs';
+      this.error = "Invalid action. Please check the input values.";
       return;
     }
 
@@ -257,7 +267,10 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       this.endUnp = this.endUsrUnp;
     }
 
-    if (this.stUnp !== '-' || this.endUnp !== '-') {
+    if (this.stUnp === '-' || this.endUnp === '-' || this.stUnp > this.endUnp) {
+      this.error = "Invalid action. Please check the input values."
+      return;
+    } else {
       this.countCustom += 1;
     }
 
@@ -302,6 +315,42 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       Log.w(2, 'no custom entities to remove.');
       return;
     }
+
+    if (type === 'selected') {
+      for (const elem in this.multicustom) {
+        if (this.multicustom[elem].pdb === this.lastCustom.pdb
+          && this.multicustom[elem].x === this.lastCustom.st
+          && this.multicustom[elem].y === this.lastCustom.end) {
+          delete this.multicustom[elem];
+        }
+      }
+      for (const elem in this.featureList[0].data) {
+        if (this.featureList[0].data[elem].label === this.lastCustom.pdb
+          && this.featureList[0].data[elem].x === this.lastCustom.st
+          && this.featureList[0].data[elem].y === this.lastCustom.end) {
+          delete this.featureList[0].data[elem];
+        }
+      }
+      // for (const elem in this.clicked.user) {
+      //   if (this.clicked.user[elem].start_residue_number === this.lastCustom.st
+      //     &&  this.clicked.user[elem].end_residue_number === this.lastCustom.end) {
+      //     delete  this.clicked.user[elem];
+      //   }
+      // }
+      // this.stvComp.deleteColor(this.arrEntry, this.clicked);
+      // for (const elem in this.featureList[0].data) {
+      //   if (this.featureList[0].data[elem].label === this.lastCustom.pdb
+      //     && this.featureList[0].data[elem].x === this.lastCustom.st
+      //     && this.featureList[0].data[elem].y === this.lastCustom.end) {
+      //     delete this.featureList[0].data[elem];
+      //   }
+      // }
+      this.updateInput();
+
+
+    }
+    console.log(this.multicustom);
+    console.log(this.featureList[0].data);
 
     if (type === 'last') {
       this.countCustom -= 1;
@@ -439,6 +488,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     const xy = -1; // TODO change this
     // if custom label, take name of last clicked pdb
     if (r.detail.label === 'custom') {
+      this.lastCustom = {pdb: r.detail.selectedRegion.label, st, end};
       label = this.lastClicked;
       label = 'c-' + label;
 
@@ -473,6 +523,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     this.updateStv(st, end, pdb, ch, identity, rgb, xy);
     this.updateSqv(st, end, clickedColorHex, identity);
     this.actualPdb = clickedPdb;
+
   }
 
   updateStv(st, end, pdb, ch, identity, rgb, xy) {
@@ -547,6 +598,8 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     }
 
     this.updateInput();
+    console.log(this.clicked);
+    console.log(this.clickedSqv);
   }
 
   insertClickElem(obj, arr) {
@@ -567,6 +620,11 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       delete obj.pdb;
       arr.push(obj);
     }
+  }
+
+
+  selectedFeature (event: any) {
+    this.feature = event.target.value;
   }
 
   selectChangeHandler(event: any) {

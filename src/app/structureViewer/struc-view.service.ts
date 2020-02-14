@@ -39,6 +39,8 @@ export class StrucViewService {
     if (this.ltplugin === undefined) {
       return;
     }
+    console.log('APPLIED COLORS');
+    console.log(entr);
 
     const model = this.ltplugin.selectEntities('model')[0] as LiteMol.Bootstrap.Entity.Molecule.Model;
 

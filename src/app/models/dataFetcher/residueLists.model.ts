@@ -41,6 +41,7 @@ export class ResidueListsModel extends QueryExtractor {
       }
 
       molList = {entity_id: molecule.entity_id, chains: []};
+
       for (const chain of molecule.chains) {
 
         if (chain.chain_id === undefined ||

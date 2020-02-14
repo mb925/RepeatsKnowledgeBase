@@ -93,6 +93,15 @@ app-stv {
 .forms {
   margin-top: 10px;
   display: inline-block;
+  text-align: left;
+  color: #00709b;
+}
+
+.forms label {
+  display: inline-block;
+  letter-spacing: 0.025rem;
+  width: 4rem;
+  font-size: 0.9rem;
 }
 
 mb-sqv-lib {
@@ -148,10 +157,6 @@ select {
   padding-bottom: 150px;
 }
 
-span {
-  color: #00709b;
-}
-
 .alert {
   margin-top: 10px;
   font-size: 0.8rem;
@@ -159,7 +164,9 @@ span {
 }
 
 
-
+.actions img {
+  width: 10px;
+}
 
 input {
   padding: 2px 5px;

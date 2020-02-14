@@ -8,33 +8,43 @@
 
           <div class="fixed_top">
 
-              <div>
+              <div class="actions">
+                <select (change)="selectedFeature($event)">
+                  <option [value]="feature" *ngFor="let feature of features">
+                    {{feature}}
+                  </option>
+                </select>
                 <button title="add custom" (click)="drawCustom()">
-                  <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                  <img src="https://svgsilh.com/svg/1727487-00709b.svg">
                 </button>
-                <button title="remove custom" (click)="removeCustom('last')">
-                  <i class="fa fa-minus-circle" aria-hidden="true"></i>
+                <button title="Remove last" (click)="removeCustom('last')">
+                  <img style="padding-bottom: 2px;" src="https://svgsilh.com/svg/97616-00709b.svg">
                 </button>
-                <button title="remove all custom" (click)="removeCustom('all')">
+<!--                <button title="Remove selected" (click)="removeCustom('selected')">-->
+<!--                  <img src="https://svgsilh.com/svg/156119-00709b.svg">-->
+<!--                </button>-->
+                <button title="Remove all" (click)="removeCustom('all')">
                   <i class="fa fa-undo" aria-hidden="true"></i>
                 </button>
               </div>
 
               <div class="forms">
                 <div>
-                  <span>PDB:</span>
+                  <label>PDB:</label>
                   <input placeholder="Start" type="text" [attr.disabled]="disStartPdb" [(ngModel)]="startUsrPdb">
                   <input placeholder="End" type="text" [attr.disabled]="disEndPdb" [(ngModel)]="endUsrPdb">
                   <i class="fa fa-exchange" aria-hidden="true"></i>
-                  <span>UniProt:  &nbsp;&nbsp;  [{{stUnp}}]  , [{{endUnp}}]</span>
+                  <label>UniProt:</label>
+                  <span>[{{stUnp}}]  , [{{endUnp}}]</span>
                 </div>
 
                 <div>
-                  <span>UniProt:</span>
+                  <label>UniProt:</label>
                   <input placeholder="Start" type="text" [attr.disabled]="disStartUnp" [(ngModel)]="startUsrUnp">
                   <input placeholder="End" type="text" [attr.disabled]="disEndUnp" [(ngModel)]="endUsrUnp">
                   <i class="fa fa-exchange" aria-hidden="true"></i>
-                  <span>PDB: &nbsp; &nbsp; &nbsp; &nbsp;[{{stPdb}}] , [{{endPdb}}]</span>
+                  <label>UniProt:</label>
+                  <span> [{{stPdb}}] , [{{endPdb}}]</span>
                 </div>
               </div>
               <div class="alert"> {{alert}}</div>
@@ -66,7 +76,7 @@
               </a>
             </button>
             <button  *ngIf="multifasta">
-              <a [href]="multifasta" title="Download multifasta" download="multifasta.txt">
+              <a [href]="multifasta" title="Download multifasta" download="multifasta.fa">
                 <i class="fa fa-arrow-circle-down" aria-hidden="true">
                 </i>
               </a>

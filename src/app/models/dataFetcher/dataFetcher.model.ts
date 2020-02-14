@@ -48,7 +48,7 @@ export class DataFetcherModel {
     let entList: PdbEntity;
     let resListObj;
     let tmp: any;
-
+    console.log(unpMapping);
     for (const pdb of unpMapping.pdbs) {
 
       uniprotInfo.pdbs[pdb.pdb] = [];
@@ -62,7 +62,7 @@ export class DataFetcherModel {
       if (!resList) {
         continue;
       }
-
+      console.log(resList);
       resListObj = {};
       for (const molecule of resList.molecules) {
         if (!(molecule.entity_id in resListObj)) {
@@ -78,7 +78,9 @@ export class DataFetcherModel {
         }
       }
 
+
       for (const chain of pdb.chains) {
+
         chainId = chain.chain_id;
 
         // check if chain already inserted
@@ -188,8 +190,15 @@ export class DataFetcherModel {
       residue = residues.find(i => i.residue_number === residueNumber);
 
 
-      if (residue !== undefined && obj.aut_to_unp[residue.author_residue_number][0] !== 'u') {
-        obj.unp_to_aut[unpResidue] = residue.author_residue_number;
+
+      if (residue !== undefined) {
+
+        if (residue.author_residue_number in obj.aut_to_unp) {
+          if (obj.aut_to_unp[residue.author_residue_number][0] !== 'u')  {
+            obj.unp_to_aut[unpResidue] = residue.author_residue_number;
+          }
+        }
+
       } else {
         obj.unp_to_aut[unpResidue] = '-';
       }
