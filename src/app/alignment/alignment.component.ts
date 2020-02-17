@@ -46,8 +46,11 @@ export class AlignmentComponent implements OnInit {
   clickedUnp(unp) {
     let rows;
     rows = this.generateInp(unp);
-    document.getElementsByClassName('msaUniprot_pre')[0].className = 'msaUniprot';
-    document.getElementsByClassName('button_pre')[0].className = '';
+    if( document.getElementsByClassName('msaUniprot_pre')[0] !== undefined){
+      document.getElementsByClassName('msaUniprot_pre')[0].className = 'msaUniprot';
+      document.getElementsByClassName('button_pre')[0].className = '';
+    }
+
     document.getElementsByClassName('titleMsa')[0].innerHTML = '<h3 style="color: #6d5188;">Multiple Sequence Alignment</h3>';
     this.input = {
       rows,

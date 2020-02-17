@@ -52,7 +52,9 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   static fvOptions = {
     showAxis: true, showSequence: true, toolbar: true,
     toolbarPosition: 'left', zoomMax: 10, sideBar: 200,
-    flagColor: '#DFD5F5', showSubFeatures: true, backgroundcolor: 'transparent'
+    flagColor: '#DFD5F5', showSubFeatures: true, backgroundcolor: 'transparent',
+    // flagTrack: 150,
+    // flagTrackMobile: 150
   };
 
   @Input() event: Event;
@@ -317,42 +319,40 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     }
 
     if (type === 'selected') {
-      for (const elem in this.multicustom) {
-        if (this.multicustom[elem].pdb === this.lastCustom.pdb
-          && this.multicustom[elem].x === this.lastCustom.st
-          && this.multicustom[elem].y === this.lastCustom.end) {
-          delete this.multicustom[elem];
+
+      for (let i = 0; i < this.multicustom.length; i++) {
+        if (this.multicustom[i].pdb === this.lastCustom.pdb
+          && +this.multicustom[i].x === this.lastCustom.st
+          && +this.multicustom[i].y === this.lastCustom.end) {
+          this.multicustom.splice(i, 1);
         }
       }
-      for (const elem in this.featureList[0].data) {
-        if (this.featureList[0].data[elem].label === this.lastCustom.pdb
-          && this.featureList[0].data[elem].x === this.lastCustom.st
-          && this.featureList[0].data[elem].y === this.lastCustom.end) {
-          delete this.featureList[0].data[elem];
+      for (let i = 0; i < this.featureList[0].data.length; i++) {
+        if (this.featureList[0].data[i].label === this.lastCustom.pdb
+          && this.featureList[0].data[i].x === this.lastCustom.st
+          && this.featureList[0].data[i].y === this.lastCustom.end) {
+          this.featureList[0].data.splice(i, 1);
         }
       }
-      // for (const elem in this.clicked.user) {
-      //   if (this.clicked.user[elem].start_residue_number === this.lastCustom.st
-      //     &&  this.clicked.user[elem].end_residue_number === this.lastCustom.end) {
-      //     delete  this.clicked.user[elem];
-      //   }
-      // }
-      // this.stvComp.deleteColor(this.arrEntry, this.clicked);
-      // for (const elem in this.featureList[0].data) {
-      //   if (this.featureList[0].data[elem].label === this.lastCustom.pdb
-      //     && this.featureList[0].data[elem].x === this.lastCustom.st
-      //     && this.featureList[0].data[elem].y === this.lastCustom.end) {
-      //     delete this.featureList[0].data[elem];
-      //   }
-      // }
+
+      for (let i = 0; i < this.clicked.user.length; i++) {
+        if (this.clicked.user[i].start_residue_number === this.lastCustom.st
+          &&  this.clicked.user[i].end_residue_number === this.lastCustom.end) {
+          this.clicked.user.splice(i, 1);
+        }
+      }
+      for (let i = 0; i < this.clickedSqv.user.length; i++) {
+        const reg = this.lastCustom.st + '-' + this.lastCustom.end;
+        if (this.clickedSqv.user[i].reg === reg) {
+          this.clickedSqv.user.splice(i, 1);
+        }
+      }
+
+      this.stvComp.deleteColor(this.arrEntry, this.clicked);
       this.updateInput();
+      this.countCustom -=1;
 
-
-    }
-    console.log(this.multicustom);
-    console.log(this.featureList[0].data);
-
-    if (type === 'last') {
+    } else if (type === 'last') {
       this.countCustom -= 1;
       this.multicustom.pop();
 
@@ -474,6 +474,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   }
 
   updateTools(r) {
+
     // preprocess input
     const st = r.detail.selectedRegion.x;
     const end = r.detail.selectedRegion.y;
@@ -527,6 +528,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   }
 
   updateStv(st, end, pdb, ch, identity, rgb, xy) {
+
     if (identity === 'usr') {
 
       // tslint:disable-next-line:forin
@@ -598,8 +600,6 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     }
 
     this.updateInput();
-    console.log(this.clicked);
-    console.log(this.clickedSqv);
   }
 
   insertClickElem(obj, arr) {
