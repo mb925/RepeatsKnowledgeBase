@@ -208,7 +208,6 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   }
 
   paint(event) {
-    console.log(event);
 
     if (event.detail.id.includes('drop')){
       this.tint(event);
@@ -254,46 +253,98 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     }
   }
 
+  // change colors of selected custom features
   tint(event) {
-
-    console.log(this.clicked);
 
     if (this.clicked.user.length <= 0) {
       this.error = "Click on a custom feature to start (green elements)";
       return;
     }
 
-  console.log(event.detail.id);
-    for (let i = 0; i < this.multicustom.length; i++) {
-      if (this.multicustom[i].pdb === this.lastCustom.pdb
-        && +this.multicustom[i].x === this.lastCustom.st
-        && +this.multicustom[i].y === this.lastCustom.end) {
-        console.log(this.multicustom[i]);
+    for (let i = 0; i < this.featureList[0].data.length; i++) {
+      if (this.featureList[0].data[i].label === this.lastCustom.pdb
+        && this.featureList[0].data[i].x === this.lastCustom.st
+        && this.featureList[0].data[i].y === this.lastCustom.end) {
+        switch(event.detail.id) {
+          case 'drop-One': {
+            this.featureList[0].data[i].color = FeatureViewerModel.colorsHex.cOne;
+            const ftv: HTMLElement = document.getElementById('f_custom_' + this.lastCustom.st + '-' + this.lastCustom.end);
+            const rgb = this.hexToRgb(FeatureViewerModel.colorsHex.cOne).r + ', ' +
+                        this.hexToRgb(FeatureViewerModel.colorsHex.cOne).g + ', ' +
+                        this.hexToRgb(FeatureViewerModel.colorsHex.cOne).b;
+
+            // @ts-ignore
+            ftv.style = 'fill: rgb(' + rgb +'); fill-opacity: 1; stroke: rgb(' + rgb +'); z-index: 13;';
+            break;
+          }
+          case 'drop-Two': {
+            this.featureList[0].data[i].color = FeatureViewerModel.colorsHex.cTwo;
+            const ftv: HTMLElement = document.getElementById('f_custom_' + this.lastCustom.st + '-' + this.lastCustom.end);
+            const rgb = this.hexToRgb(FeatureViewerModel.colorsHex.cTwo).r + ', ' +
+              this.hexToRgb(FeatureViewerModel.colorsHex.cOne).g + ', ' +
+              this.hexToRgb(FeatureViewerModel.colorsHex.cOne).b;
+
+            // @ts-ignore
+            ftv.style = 'fill: rgb(' + rgb +'); fill-opacity: 1; stroke: rgb(' + rgb +'); z-index: 13;';
+            break;
+          }
+          case 'drop-Three': {
+            this.featureList[0].data[i].color = FeatureViewerModel.colorsHex.custom;
+            const ftv: HTMLElement = document.getElementById('f_custom_' + this.lastCustom.st + '-' + this.lastCustom.end);
+            const rgb = this.hexToRgb(FeatureViewerModel.colorsHex.cOne).r + ', ' +
+              this.hexToRgb(FeatureViewerModel.colorsHex.cOne).g + ', ' +
+              this.hexToRgb(FeatureViewerModel.colorsHex.cOne).b;
+
+            // @ts-ignore
+            ftv.style = 'fill: rgb(' + rgb +'); fill-opacity: 1; stroke: rgb(' + rgb +'); z-index: 13;';
+            break;
+          }
+        }
+
       }
     }
-    // for (let i = 0; i < this.featureList[0].data.length; i++) {
-    //   if (this.featureList[0].data[i].label === this.lastCustom.pdb
-    //     && this.featureList[0].data[i].x === this.lastCustom.st
-    //     && this.featureList[0].data[i].y === this.lastCustom.end) {
-    //     this.featureList[0].data.splice(i, 1);
-    //   }
-    // }
-    //
-    // for (let i = 0; i < this.clicked.user.length; i++) {
-    //   if (this.clicked.user[i].start_residue_number === this.lastCustom.st
-    //     &&  this.clicked.user[i].end_residue_number === this.lastCustom.end) {
-    //     this.clicked.user.splice(i, 1);
-    //   }
-    // }
-    // for (let i = 0; i < this.clickedSqv.user.length; i++) {
-    //   const reg = this.lastCustom.st + '-' + this.lastCustom.end;
-    //   if (this.clickedSqv.user[i].reg === reg) {
-    //     this.clickedSqv.user.splice(i, 1);
-    //   }
-    // }
 
-    // this.stvComp.deleteColor(this.arrEntry, this.clicked);
-    // this.updateInput();
+    for (let i = 0; i < this.clicked.user.length; i++) {
+      if (this.clicked.user[i].start_residue_number === this.lastCustom.st
+        &&  this.clicked.user[i].end_residue_number === this.lastCustom.end) {
+        switch(event.detail.id) {
+          case 'drop-One': {
+            this.clicked.user[i].color = this.hexToRgb(FeatureViewerModel.colorsHex.cOne);
+            break;
+          }
+          case 'drop-Two': {
+            this.clicked.user[i].color = this.hexToRgb(FeatureViewerModel.colorsHex.cTwo);
+            break;
+          }
+          case 'drop-Three': {
+            this.clicked.user[i].color = this.hexToRgb(FeatureViewerModel.colorsHex.custom);
+            break;
+          }
+        }
+
+      }
+    }
+    for (let i = 0; i < this.clickedSqv.user.length; i++) {
+      const reg = this.lastCustom.st + '-' + this.lastCustom.end;
+      if (this.clickedSqv.user[i].reg === reg) {
+        switch(event.detail.id) {
+          case 'drop-One': {
+            this.clickedSqv.user[i].cl = FeatureViewerModel.colorsHex.cOne;
+            break;
+          }
+          case 'drop-Two': {
+            this.clickedSqv.user[i].cl = FeatureViewerModel.colorsHex.cTwo;
+            break;
+          }
+          case 'drop-Three': {
+            this.clickedSqv.user[i].cl = FeatureViewerModel.colorsHex.custom;
+            break;
+          }
+        }
+      }
+    }
+    this.stvComp.deleteColor(this.arrEntry, this.clicked);
+    this.updateInput();
   }
   drawCustom() {
 
