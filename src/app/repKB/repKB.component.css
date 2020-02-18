@@ -19,6 +19,7 @@
   height: 100%;
   z-index: 1;
   overflow: hidden;
+  padding-bottom: 9rem;
 }
 
 #left {
@@ -150,11 +151,6 @@ select {
   cursor: pointer;
   border-radius: 2px;
   color: #00709b;
-}
-
-
-#svgContent {
-  padding-bottom: 150px;
 }
 
 .alert {
