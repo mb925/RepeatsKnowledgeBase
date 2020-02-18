@@ -44,13 +44,13 @@ export class ResidueListsModel extends QueryExtractor {
 
       for (const chain of molecule.chains) {
 
-        if (chain.chain_id === undefined ||
-          typeof chain.chain_id !== 'string') {
+        if (chain.struct_asym_id === undefined ||
+          typeof chain.struct_asym_id !== 'string') {
           Log.w(1, 'missing chain_id in chain.');
           continue;
         }
 
-        chaList = {chain_id: chain.chain_id, residues: []};
+        chaList = {chain_id: chain.struct_asym_id, residues: []};
         for (const residue of chain.residues) {
 
           if (residue.residue_number === undefined ||

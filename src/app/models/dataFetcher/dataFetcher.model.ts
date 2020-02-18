@@ -177,6 +177,7 @@ export class DataFetcherModel {
         obj.aut_to_unp[tmp] = 'u_' + unpRes.toString();
       }
     }
+    // console.log(obj);
   }
 
   /** building unp_to_aut array [index: uniprot, value: 'author_residue'] */

@@ -118,6 +118,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
 
       this.data = data;
 
+
       // create json data to download
       this.fileJson = this.dataDownload.getJson(data, this.uniprotId);
 
@@ -640,7 +641,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       // tslint:disable-next-line:forin
       for (const chain in this.data.pdbs[pdb].chains) {
         // coloring structure viewer
-
+        console.log(this.data.pdbs[pdb].chains[chain].unp_to_aut);
         // TODO to test this conversion: need and example with a pdb with chains of different length (overlapping but not completely)
         // you can run a script to see if you find them
         let stAut;
@@ -649,12 +650,17 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
           if (i in this.data.pdbs[pdb].chains[chain].unp_to_aut) {
             stAut = st - this.data.pdbs[pdb].chains[ch].shift;
             break;
+          } else {
+            console.log('not in arr');
+            return;
           }
         }
         for (let i = end; end >= st; i --) {
           if (end in this.data.pdbs[pdb].chains[chain].unp_to_aut) {
             endAut = end - this.data.pdbs[pdb].chains[ch].shift;
             break;
+          } else {
+            return;
           }
         }
 
