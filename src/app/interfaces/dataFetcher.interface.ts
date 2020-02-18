@@ -26,6 +26,7 @@ export interface PdbInfo {
 export interface ChainInfo {
   entity_id: number;
   chain_id: string;
+  struct_asym_id: string;
   tooltip: string;
   regions: Array<RegionEntity>;
   unp_start: number;

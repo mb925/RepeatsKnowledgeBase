@@ -13,6 +13,7 @@ export interface ChainMapping {
   start_residue_number: number;
   end_residue_number: number;
   chain_id: string;
+  struct_asym_id: string;
   unp_start: number;
   unp_end: number;
 }

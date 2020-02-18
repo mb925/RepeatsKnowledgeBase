@@ -70,6 +70,7 @@ export class UniprotMappingsModel extends QueryExtractor {
     const chainMapping: ChainMapping = {
       entity_id: undefined,
       chain_id: undefined,
+      struct_asym_id: undefined,
       unp_start: undefined,
       unp_end: undefined,
       start_residue_number: undefined,
@@ -89,7 +90,8 @@ export class UniprotMappingsModel extends QueryExtractor {
     }
 
     chainMapping.entity_id = chain.entity_id;
-    chainMapping.chain_id = chain.struct_asym_id;
+    chainMapping.chain_id = chain.chain_id;
+    chainMapping.struct_asym_id = chain.struct_asym_id;
     chainMapping.unp_start = chain.unp_start;
     chainMapping.unp_end = chain.unp_end;
     chainMapping.start_residue_number = this.processMapping(chain.start);

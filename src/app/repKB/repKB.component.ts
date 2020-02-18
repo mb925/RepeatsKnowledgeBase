@@ -637,11 +637,9 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   updateStv(st, end, pdb, ch, identity, rgb, xy) {
 
     if (identity === 'usr') {
-
       // tslint:disable-next-line:forin
       for (const chain in this.data.pdbs[pdb].chains) {
         // coloring structure viewer
-        console.log(this.data.pdbs[pdb].chains[chain].unp_to_aut);
         // TODO to test this conversion: need and example with a pdb with chains of different length (overlapping but not completely)
         // you can run a script to see if you find them
         let stAut;
@@ -651,7 +649,6 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
             stAut = st - this.data.pdbs[pdb].chains[ch].shift;
             break;
           } else {
-            console.log('not in arr');
             return;
           }
         }
@@ -663,7 +660,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
             return;
           }
         }
-
+        console.log(this.data.pdbs[pdb].chains[chain].struct_asym_id);
         if (stAut !== undefined && endAut !== undefined) {
           this.arrEntry = this.stvComp.updateView(xy, this.arrEntry, this.clicked,
             pdb.toLowerCase(),
@@ -671,7 +668,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
             identity, // region or units/insertions
             {
               entity_id: this.data.pdbs[pdb].chains[chain].entity_id.toString(),
-              struct_asym_id: chain,
+              struct_asym_id: this.data.pdbs[pdb].chains[chain].struct_asym_id,
               start_residue_number: stAut,
               end_residue_number: endAut,
               color: rgb
@@ -689,7 +686,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         identity, // region or units/insertions
         {
           entity_id: this.data.pdbs[pdb].chains[ch].entity_id.toString(),
-          struct_asym_id: ch,
+          struct_asym_id: this.data.pdbs[pdb].chains[ch].struct_asym_id,
           start_residue_number: st,
           end_residue_number: end,
           color: rgb

@@ -43,6 +43,7 @@ export class DataFetcherModel {
     const uniprotInfo: UniprotInfo = {sequence: unpSequence.sequence, pdbs: {}};
     let pdbInfo: PdbInfo;
     let chainId: string;
+    let structAsymId: string;
     let chainInfo: ChainInfo;
     let resList: ResidueList;
     let entList: PdbEntity;
@@ -76,11 +77,10 @@ export class DataFetcherModel {
           }
         }
       }
-
-
       for (const chain of pdb.chains) {
 
         chainId = chain.chain_id;
+        structAsymId = chain.struct_asym_id;
 
         // check if chain already inserted
         // prevents to execute also for other fragments
@@ -92,6 +92,7 @@ export class DataFetcherModel {
           pdbInfo.chains[chainId] = {
             entity_id: undefined,
             chain_id: chainId,
+            struct_asym_id: structAsymId,
             tooltip: '',
             regions: [],
             unp_end: -1,
@@ -157,7 +158,7 @@ export class DataFetcherModel {
     }
     // insert uniprot object inside uniprots dict
     this.data.uniprots[unpSequence.id] = uniprotInfo;
-
+    console.log(this.data)
     return this.data;
   }
 
@@ -177,7 +178,6 @@ export class DataFetcherModel {
         obj.aut_to_unp[tmp] = 'u_' + unpRes.toString();
       }
     }
-    // console.log(obj);
   }
 
   /** building unp_to_aut array [index: uniprot, value: 'author_residue'] */

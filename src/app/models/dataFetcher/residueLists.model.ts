@@ -50,7 +50,7 @@ export class ResidueListsModel extends QueryExtractor {
           continue;
         }
 
-        chaList = {chain_id: chain.struct_asym_id, residues: []};
+        chaList = {chain_id: chain.chain_id, struct_asym_id: chain.struct_asym_id, residues: []};
         for (const residue of chain.residues) {
 
           if (residue.residue_number === undefined ||

@@ -11,6 +11,7 @@ export interface MoleculeList {
 export interface ChainList {
   chain_id: string;
   residues: Array<Residue>;
+  struct_asym_id: string;
 }
 
 export interface Residue {
