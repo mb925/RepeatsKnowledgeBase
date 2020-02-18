@@ -373,10 +373,10 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       this.endUnp = this.endUsrUnp;
     }
 
-    if (this.stUnp === '-' || this.endUnp === '-' || this.stUnp > this.endUnp) {
+    if (this.stUnp === '-' || this.endUnp === '-' || +this.stUnp > +this.endUnp) {
       this.error = e
       return;
-    } else if (this.stUnp === this.endUnp) {
+    } else if (+this.stUnp === +this.endUnp) {
       this.error = "Feature is too short to be showed.";
       return;
     } else {
