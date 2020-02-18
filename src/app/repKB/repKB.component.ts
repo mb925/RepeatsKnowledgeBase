@@ -281,8 +281,8 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
             this.featureList[0].data[i].color = FeatureViewerModel.colorsHex.cTwo;
             const ftv: HTMLElement = document.getElementById('f_custom_' + this.lastCustom.st + '-' + this.lastCustom.end);
             const rgb = this.hexToRgb(FeatureViewerModel.colorsHex.cTwo).r + ', ' +
-              this.hexToRgb(FeatureViewerModel.colorsHex.cOne).g + ', ' +
-              this.hexToRgb(FeatureViewerModel.colorsHex.cOne).b;
+                        this.hexToRgb(FeatureViewerModel.colorsHex.cTwo).g + ', ' +
+                        this.hexToRgb(FeatureViewerModel.colorsHex.cTwo).b;
 
             // @ts-ignore
             ftv.style = 'fill: rgb(' + rgb +'); fill-opacity: 1; stroke: rgb(' + rgb +'); z-index: 13;';
@@ -291,9 +291,9 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
           case 'drop-Three': {
             this.featureList[0].data[i].color = FeatureViewerModel.colorsHex.custom;
             const ftv: HTMLElement = document.getElementById('f_custom_' + this.lastCustom.st + '-' + this.lastCustom.end);
-            const rgb = this.hexToRgb(FeatureViewerModel.colorsHex.cOne).r + ', ' +
-              this.hexToRgb(FeatureViewerModel.colorsHex.cOne).g + ', ' +
-              this.hexToRgb(FeatureViewerModel.colorsHex.cOne).b;
+            const rgb = this.hexToRgb(FeatureViewerModel.colorsHex.custom).r + ', ' +
+                        this.hexToRgb(FeatureViewerModel.colorsHex.custom).g + ', ' +
+                        this.hexToRgb(FeatureViewerModel.colorsHex.custom).b;
 
             // @ts-ignore
             ftv.style = 'fill: rgb(' + rgb +'); fill-opacity: 1; stroke: rgb(' + rgb +'); z-index: 13;';
