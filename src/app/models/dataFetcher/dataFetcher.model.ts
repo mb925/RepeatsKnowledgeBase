@@ -48,7 +48,7 @@ export class DataFetcherModel {
     let entList: PdbEntity;
     let resListObj;
     let tmp: any;
-    console.log(unpMapping);
+
     for (const pdb of unpMapping.pdbs) {
 
       uniprotInfo.pdbs[pdb.pdb] = [];
@@ -62,7 +62,6 @@ export class DataFetcherModel {
       if (!resList) {
         continue;
       }
-      console.log(resList);
       resListObj = {};
       for (const molecule of resList.molecules) {
         if (!(molecule.entity_id in resListObj)) {

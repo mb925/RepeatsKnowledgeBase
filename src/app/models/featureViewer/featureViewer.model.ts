@@ -13,11 +13,13 @@ export class FeatureViewerModel {
     unitsLight: '#00709B',
     unitsDark: '#03256C',
     insertions: '#F2BB05',
-    custom: '#1C7C54'
+    custom: '#1C7C54',
+    cOne: '#E36414',
+    cTwo: '#8D6A9F'
   };
 
 
-  // /** Custom entities */
+  /** Custom entities */
   static buildCusFt(start: string, end: string, sequenceLength: number, actualPdb: string) {
 
     const x = +start;
@@ -41,34 +43,51 @@ export class FeatureViewerModel {
       id: `custom`, data: [{x, y, color: this.colorsHex.custom, label: actualPdb}], isOpen: true,
       sidebar: [
         {
-          id: 'MyCust',
+          id: `drop-One`,
           tooltip: actualPdb,
-          content: `<a id="usr" target="_blank"></a>`,
+          content: `<i class="fa fa-tint" id="cOne"></i>`,
+        },
+        {
+          id: 'drop-Two',
+          content: `<i class="fa fa-tint" id="cTwo"></i>`
+
+        },
+        {
+          id: 'drop-Three',
+          content: `<i class="fa fa-tint" id="cThree"></i>`
+        },
+        {
+          id: 'drop-paint',
+          content: `<a id="usr"></a>`
         }
+
       ]
     };
 
     return res;
+
   }
 
-  /** Uniprot entities */
+  /** Uniprot entity */
   static buildUnpFt(uniprotId: string, sequenceLength: number) {
     return {
-      type: 'rect', color: this.colorsHex.uniprot, label: uniprotId, id: `p-${uniprotId}`,
+      type: 'rect', color: this.colorsHex.uniprot,
+      label: uniprotId,
+      id: `p-${uniprotId}`,
       data: [
         { x: 1, y: sequenceLength }
       ],
       sidebar: [
         {
-          id: 'MyHtml',
+          id: 'unpLink',
           tooltip: 'UNIPROT ' + uniprotId,
-          content: `<a target="_blank" href="${FeatureViewerModel.unpUrl}${uniprotId}"><i class="fa fa-link" aria-hidden="true"></i></a>`,
+          content: `<a href="${FeatureViewerModel.unpUrl}${uniprotId}"><i class="fa fa-link"></i></a>`,
         }
       ]
     };
   }
 
-  /** Chain entities */
+  /** Pdb chain entities */
   static buildChFt(pdb: string, chainInfo: ChainInfo) {
     const res =  {
       type: 'rect',
@@ -78,12 +97,7 @@ export class FeatureViewerModel {
       isOpen: true,
       sidebar: [
         {
-          id: 'MyHtml',
-          tooltip: `${pdb}-${chainInfo.chain_id}`,
-          content: ''
-        },
-        {
-          id: 'MyHtml',
+          id: `pdbLink-${pdb}-${chainInfo.chain_id}`,
           tooltip: `PDB ${pdb}-${chainInfo.chain_id}`,
           content: ''
         }
@@ -91,13 +105,12 @@ export class FeatureViewerModel {
     };
 
     res.data.push({x: chainInfo.unp_start, y: chainInfo.unp_end, color: this.colorsHex.chains});
-
-    res.sidebar[0].content = `<a style="width: 16px;"></a>`; // TODO color only pdb
-    res.sidebar[1].content =  `<a target="_blank" href="${FeatureViewerModel.chaUrl}${pdb}">
-                                    <i style="margin-top:5px;" class="fa fa-external-link-square" aria-hidden="true"></i></a>`; // PDB
+    res.sidebar[0].content =  `<a href="${FeatureViewerModel.chaUrl}${pdb}">
+                                    <i style="margin-top:5px;" class="fa fa-external-link-square" ></i></a>`;
     return res;
   }
 
+  /** Units, insertions entities */
   static buildRegFt(pdb: string, chainInfo: ChainInfo) {
 
     const result = [];
@@ -159,41 +172,35 @@ export class FeatureViewerModel {
       const dt = JSON.stringify(data);
       return {
         type: 'rect',
-        label,
+        id: label,
         data,
         isOpen: true,
         sidebar: [
           {
-            id: 'MyHtml',
-            tooltip: `${pdb}-${chain}`,
-            content: `<a target="_blank">
-                    <i
-                                              data-pdb="${label}"
-                                              data-xy = '${dt}'
-                                              class="fa fa-paint-brush" aria-hidden="true"></i></a>`
+            id: `rpLink-${pdb}-${chain}`,
+            tooltip: `RpsDb ${pdb}-${chain}`,
+            content: `<a href="${FeatureViewerModel.pdbUrl}${pdb}${chain}">
+                    <i class="fa fa-external-link"></i></a>`
           },
           {
-            id: 'MyHtml',
-            tooltip: `RpsDb ${pdb}-${chain}`,
-            content: `<a target="_blank" href="${FeatureViewerModel.pdbUrl}${pdb}${chain}">
-                    <i class="fa fa-external-link" aria-hidden="true"></i></a>` // RepeatsDb
+            id: `${label}`,
+            tooltip: `paint`,
+            dataxy: `${dt}`,
+            content: `<a><i class="fa fa-paint-brush"></i></a>`
           }
         ]
       };
     } else { // if I have a single element I don't need the paint brush
       return {
-        type: 'rect', label, data,
+        type: 'rect',
+        id: label,
+        data,
         isOpen: true,
         sidebar: [
           {
-            id: 'MyHtml',
-            tooltip: `${pdb}-${chain}`,
-            content: `<a target="_blank" style="width: 16px;"></a>`
-          },
-          {
-            id: 'MyHtml',
+            id: `rpLink-${pdb}-${chain}`,
             tooltip: `RpsDb ${pdb}-${chain}`,
-            content: `<a target="_blank" href="${FeatureViewerModel.pdbUrl}${pdb}${chain}">
+            content: `<a href="${FeatureViewerModel.pdbUrl}${pdb}${chain}">
                     <i class="fa fa-external-link" aria-hidden="true"></i></a>` // RepeatsDb
           }
         ]

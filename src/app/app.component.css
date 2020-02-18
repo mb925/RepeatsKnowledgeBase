@@ -7,5 +7,15 @@
 }
 
 ::ng-deep .fa {
-  color: steelblue;
+  color: #00709b;
+}
+::ng-deep #cOne {
+  color: #E36414;
+}
+::ng-deep #cTwo {
+  color: #8D6A9F;
+}
+
+::ng-deep #cThree {
+  color: #1C7C54;
 }
