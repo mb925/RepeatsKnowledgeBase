@@ -39,7 +39,6 @@ export class StrucViewService {
     if (this.ltplugin === undefined) {
       return;
     }
-    console.log(entr);
     const model = this.ltplugin.selectEntities('model')[0] as LiteMol.Bootstrap.Entity.Molecule.Model;
 
     if (!model) { return; }

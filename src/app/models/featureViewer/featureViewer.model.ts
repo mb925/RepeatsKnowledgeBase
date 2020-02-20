@@ -142,7 +142,7 @@ export class FeatureViewerModel {
         {
           id: 'unpLink',
           tooltip: 'UNIPROT ' + uniprotId,
-          content: `<a href="${FeatureViewerModel.unpUrl}${uniprotId}"><i class="fa fa-link"></i></a>`,
+          content: `<a target="_blank" href="${FeatureViewerModel.unpUrl}${uniprotId}"><i class="fa fa-link"></i></a>`,
         }
       ]
     };
@@ -166,7 +166,7 @@ export class FeatureViewerModel {
     };
 
     res.data.push({x: chainInfo.unp_start, y: chainInfo.unp_end, color: this.colorsHex.chains});
-    res.sidebar[0].content =  `<a href="${FeatureViewerModel.chaUrl}${pdb}">
+    res.sidebar[0].content =  `<a target="_blank" href="${FeatureViewerModel.chaUrl}${pdb}">
                                     <i style="margin-top:5px;" class="fa fa-external-link-square" ></i></a>`;
     return res;
   }
@@ -241,7 +241,7 @@ export class FeatureViewerModel {
           {
             id: `rpLink-${pdb}-${chain}`,
             tooltip: `RpsDb ${pdb}-${chain}`,
-            content: `<a href="${FeatureViewerModel.pdbUrl}${pdb}${chain}">
+            content: `<a target="_blank" href="${FeatureViewerModel.pdbUrl}${pdb}${chain}">
                     <i class="fa fa-external-link"></i></a>`
           },
           {
@@ -262,7 +262,7 @@ export class FeatureViewerModel {
           {
             id: `rpLink-${pdb}-${chain}`,
             tooltip: `RpsDb ${pdb}-${chain}`,
-            content: `<a href="${FeatureViewerModel.pdbUrl}${pdb}${chain}">
+            content: `<a target="_blank" href="${FeatureViewerModel.pdbUrl}${pdb}${chain}">
                     <i class="fa fa-external-link" aria-hidden="true"></i></a>` // RepeatsDb
           }
         ]

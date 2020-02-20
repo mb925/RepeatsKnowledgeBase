@@ -55,7 +55,6 @@ export class DataFetcherModel {
       uniprotInfo.pdbs[pdb.pdb] = [];
       pdbInfo = {
         uniprots: new Set<string>([unpSequence.id]),
-        tooltip: '',
         chains: {}
       };
 
@@ -93,7 +92,6 @@ export class DataFetcherModel {
             entity_id: undefined,
             chain_id: chainId,
             struct_asym_id: structAsymId,
-            tooltip: '',
             regions: [],
             unp_end: -1,
             unp_start: Infinity,

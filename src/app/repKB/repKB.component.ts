@@ -68,7 +68,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   fileJson;
   multifasta;
   multicustom = [];
-  lastCustom;
+  lastSelectCustom;
   startUsrPdb;
   endUsrPdb;
   startUsrUnp;
@@ -154,10 +154,10 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
             chFeature.sidebar.push({
               id: `rpLink ${pdb}-${chain}`,
               tooltip: `RpsDb ${pdb}-${chain}`,
-              content: `<a href="${FeatureViewerModel.pdbUrl}${pdb}${chain}">
+              content: `<a target="_blank" href="${FeatureViewerModel.pdbUrl}${pdb}${chain}">
                     <i style="margin-top: 6px" class="fa fa-external-link"></i></a>` // RepeatsDb
             });
-            chFeature.sidebar[2].tooltip = pdb + chain + ' | RpsDb additional info';
+            chFeature.sidebar[1].tooltip = pdb + chain + ' | RpsDb additional info';
 
           }
           if (subFt.length > 0) {
@@ -271,9 +271,9 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     }
 
     for (let i = 0; i < this.featureList[0].data.length; i++) {
-      if (this.featureList[0].data[i].label === this.lastCustom.pdb
-        && this.featureList[0].data[i].x === this.lastCustom.st
-        && this.featureList[0].data[i].y === this.lastCustom.end) {
+      if (this.featureList[0].data[i].label === this.lastSelectCustom.pdb
+        && this.featureList[0].data[i].x === this.lastSelectCustom.x
+        && this.featureList[0].data[i].y === this.lastSelectCustom.y) {
         switch(event.detail.id) {
           case 'drop-One': {
             this.featureList[0].data[i].color = FeatureViewerModel.colorsHex.cOne;
@@ -297,8 +297,8 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     this.featureViewer.onRegionSelected(r => this.updateTools(r));
     this.featureViewer.onButtonSelected(r => this.paint(r));
     for (let i = 0; i < this.clicked.user.length; i++) {
-      if (this.clicked.user[i].start_residue_number === this.lastCustom.st
-        &&  this.clicked.user[i].end_residue_number === this.lastCustom.end) {
+      if (this.clicked.user[i].start_residue_number === this.lastSelectCustom.x
+        &&  this.clicked.user[i].end_residue_number === this.lastSelectCustom.y) {
         switch(event.detail.id) {
           case 'drop-One': {
             this.clicked.user[i].color = this.hexToRgb(FeatureViewerModel.colorsHex.cOne);
@@ -317,7 +317,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       }
     }
     for (let i = 0; i < this.clickedSqv.user.length; i++) {
-      const reg = this.lastCustom.st + '-' + this.lastCustom.end;
+      const reg = this.lastSelectCustom.x + '-' + this.lastSelectCustom.y;
       if (this.clickedSqv.user[i].reg === reg) {
         switch(event.detail.id) {
           case 'drop-One': {
@@ -353,7 +353,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         this.featureList.unshift(entity)
       }
       this.multicustom.push({id: entity.data[0].label, pdb: this.actualPdb,
-        x: this.stUnp, y: this.endUnp, color: FeatureViewerModel.colorsHex.custom});
+        x: +this.stUnp, y: +this.endUnp, color: FeatureViewerModel.colorsHex.custom, feature: this.feature});
     }
   }
   addCustom() {
@@ -390,8 +390,6 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       this.error = 'Feature is too short to be showed.';
       return;
     }
-
-
 
     let ftUnit;
     let ftIns;
@@ -435,59 +433,49 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       Log.w(1, 'nothing to draw on.');
       return;
     }
-    console.log(this.featureList)
 
     if (type === 'selected') {
 
       for (let i = 0; i < this.multicustom.length; i++) {
-        if (this.multicustom[i].id === this.lastCustom.id) {
+        if (this.multicustom[i].id === this.lastSelectCustom.id) {
           this.multicustom.splice(i, 1);
         }
       }
-      for (let i = 0; i < this.featureList[0].data.length; i++) {
-        if (this.featureList[0].data[i].label === this.lastCustom.id) {
 
-          this.featureList[0].data[i].color = FeatureViewerModel.colorsHex.transp;
-
+      switch (this.lastSelectCustom.feature) {
+        case 'unit':{
+          this.removeSelected(this.lastSelectCustom, FeatureViewerModel.custom.labelUnit);
+          break;
+        }
+        case 'insertion':{
+          this.removeSelected(this.lastSelectCustom, FeatureViewerModel.custom.labelIns);
+          break;
         }
       }
-
-      for (let i = 0; i < this.clicked.user.length; i++) {
-        if (this.clicked.user[i].start_residue_number === this.lastCustom.st
-          &&  this.clicked.user[i].end_residue_number === this.lastCustom.end) {
-          this.clicked.user.splice(i, 1);
-        }
-      }
-      for (let i = 0; i < this.clickedSqv.user.length; i++) {
-        const reg = this.lastCustom.st + '-' + this.lastCustom.end;
-        if (this.clickedSqv.user[i].reg === reg) {
-          this.clickedSqv.user.splice(i, 1);
-        }
-      }
-
-      this.stvComp.deleteColor(this.arrEntry, this.clicked);
-      this.updateInput();
-
     } else if (type === 'last') {
       const last = this.multicustom.pop();
-      console.log(last)
-      // TODO prima di rimuovere controlla magari se esiste davvero una feature da rimuovere
-      this.featureList[0].data.pop();
-      this.clicked.user.pop();
-      this.stvComp.deleteColor(this.arrEntry, this.clicked);
-
-      this.clickedSqv.user.pop();
-      this.updateInput();
-
+      switch (last.feature) {
+        case 'unit':{
+          this.removeSelected(last, FeatureViewerModel.custom.labelUnit);
+          break;
+        }
+        case 'insertion':{
+          this.removeSelected(last, FeatureViewerModel.custom.labelIns);
+          break;
+        }
+      }
     } else {
       this.multicustom = [];
-
       this.clicked.user = [];
       this.stvComp.deleteColor(this.arrEntry, this.clicked);
-
       this.clickedSqv.user = [];
       this.updateInput();
-      this.featureList.shift();
+      for (const ft in this.featureList) {
+        if (this.featureList[ft].id === FeatureViewerModel.custom.labelUnit ||
+            this.featureList[ft].id === FeatureViewerModel.custom.labelIns) {
+          this.featureList.splice(+ft, 1)
+        }
+      }
     }
     this.featureViewer.emptyFeatures();
     this.featureViewer.addFeatures(this.featureList);
@@ -498,6 +486,38 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     //   document.getElementById('usr').innerHTML = `<a id='usr'><i data-id='usr' data-dt = '${dt}' class='fa fa-paint-brush'
     //    aria-hidden='true'></i></a>`;
     // }
+  }
+
+  removeSelected(element, check) {
+    let flag = false;
+    for (const ft in this.featureList) {
+      if (this.featureList[ft].id === check) {
+        flag = true;
+        for (let i = 0; i < this.featureList[ft].data.length; i++) {
+          if (this.featureList[ft].data[i].label === element.id) {
+            this.featureList[ft].data.splice(i, 1);
+            if (this.featureList[ft].data.length === 0) {
+              this.featureList.splice(i, 1)
+            }
+          }
+        }
+      }
+    }
+    for (let i = 0; i < this.clicked.user.length; i++) {
+      if (this.clicked.user[i].start_residue_number === element.x
+        &&  this.clicked.user[i].end_residue_number === element.y) {
+        this.clicked.user.splice(i, 1);
+      }
+    }
+
+    for (let i = 0; i < this.clickedSqv.user.length; i++) {
+      const reg = element.x + '-' + element.y;
+      if (this.clickedSqv.user[i].reg === reg) {
+        this.clickedSqv.user.splice(i, 1);
+      }
+    }
+    this.stvComp.deleteColor(this.arrEntry, this.clicked);
+    this.updateInput();
   }
 
   // real time user values conversion
@@ -589,28 +609,26 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   }
 
   updateTools(r) {
-    console.log(r);
-
     // preprocess input
-    const st = r.detail.selectedRegion.x;
-    const end = r.detail.selectedRegion.y;
+    const x = r.detail.selectedRegion.x;
+    const y = r.detail.selectedRegion.y;
+    let pdb;
+    let ch;
+    let identity;
+    let rgb;
 
     const clickedColorHex = r.detail.selectedRegion.color;
     const clickedColorRgb = this.hexToRgb(clickedColorHex);
 
-    let ch;
-    let pdb;
     let label;
-    let identity;
-    let rgb;
-    const xy = -1; // TODO change this
+    const xy = -1;
     // if custom label, take name of last clicked pdb
     if (r.detail.label === FeatureViewerModel.custom.labelUnit || r.detail.label === FeatureViewerModel.custom.labelIns) {
       this.error = '';
       if (clickedColorHex === FeatureViewerModel.colorsHex.transp) {
         return;
       }
-      this.lastCustom = {id: r.detail.selectedRegion.label, pdb: r.detail.selectedRegion.label, st, end};
+      this.lastSelectCustom = {id: r.detail.selectedRegion.label, pdb: r.detail.selectedRegion.label, x, y, feature: r.detail.label};
       label = this.lastClicked;
       label = 'c-' + label;
 
@@ -639,14 +657,18 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     this.pdb = pdb;
     this.chain = ch;
     const clickedPdb = pdb + ch;
-    if (this.actualPdb !== undefined && this.actualPdb !== clickedPdb) {
-        this.emptyArr();
+    this.updateStv(x, y, pdb, ch, identity, rgb, xy);
+    this.updateSqv(x, y, identity, clickedColorHex);
+
+
+
+    if (this.actualPdb !== undefined ) {
+      const actualPdb = this.actualPdb.substring(0, this.actualPdb.length - 1);
+      if(actualPdb !== this.pdb) {
+        this.eraseAll();
+      }
     }
-
-    this.updateStv(st, end, pdb, ch, identity, rgb, xy);
-    this.updateSqv(st, end, clickedColorHex, identity);
     this.actualPdb = clickedPdb;
-
   }
 
   updateStv(st, end, pdb, ch, identity, rgb, xy) {
@@ -708,7 +730,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  updateSqv(st, end, cl, identity) {
+  updateSqv(st, end, identity, cl) {
     const reg = st + '-' + end;
     const obj = {reg, cl};
 
@@ -801,8 +823,10 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     this.arrEntry = [];
     this.clicked.chains  = [];
     this.clicked.units = [];
+    this.clicked.user = [];
     this.clicked.insertions = [];
     this.arrEntrySqv = [];
+    this.clicked.insertions = [];
     this.clickedSqv.chains  = [];
     this.clickedSqv.units = [];
     this.clickedSqv.insertions = [];

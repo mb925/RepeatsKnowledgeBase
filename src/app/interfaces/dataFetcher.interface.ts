@@ -18,7 +18,6 @@ export interface PdbsDict {
 /** Pdbs info */
 export interface PdbInfo {
   uniprots: Set<string>;
-  tooltip: string;
   chains: {[chain: string]: ChainInfo};
 }
 
@@ -27,7 +26,6 @@ export interface ChainInfo {
   entity_id: number;
   chain_id: string;
   struct_asym_id: string;
-  tooltip: string;
   regions: Array<RegionEntity>;
   unp_start: number;
   unp_end: number;
