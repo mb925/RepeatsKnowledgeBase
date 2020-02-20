@@ -60,17 +60,17 @@ export class StrucViewService {
 
       // tslint:disable-next-line:no-non-null-assertion
       this.ltplugin = this.create(document.getElementById('litemol')!);
-      if(id === ''){
-        return;
-      }
-      await this.ltplugin.loadMolecule({
-        id: ids,
-        url: this.urlLiteMol + ids + this.urlLiteMol2,
-        format: 'cif', // default
-        modelRef: 'model',
-        doNotCreateVisual: true
+      if(id !== ''){
+        await this.ltplugin.loadMolecule({
+          id: ids,
+          url: this.urlLiteMol + ids + this.urlLiteMol2,
+          format: 'cif', // default
+          modelRef: 'model',
+          doNotCreateVisual: true
 
-      });
+        });
+      }
+
 
       // Use this (or a modification of this) for custom visualization:
       const t = this.ltplugin.createTransform();

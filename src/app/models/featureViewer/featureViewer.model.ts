@@ -15,12 +15,19 @@ export class FeatureViewerModel {
     insertions: '#F2BB05',
     custom: '#1C7C54',
     cOne: '#E36414',
-    cTwo: '#8D6A9F'
+    cTwo: '#8D6A9F',
+    transp:  '#FFFFFFFF'
   };
+  static custom = {
+    labelUnit: 'custom-unit',
+    labelIns: 'custom-insertion'
+  };
+  static idCustomUnit = 0;
+  static idCustomInsertion = 0;
 
 
-  /** Custom entities */
-  static buildCusFt(start: string, end: string, sequenceLength: number, actualPdb: string) {
+  /** Custom unit */
+  static buildCusUnit(start: string, end: string, sequenceLength: number, actualPdb: string) {
 
     const x = +start;
     const y = +end;
@@ -38,9 +45,13 @@ export class FeatureViewerModel {
       Log.w(1, 'entity start is after entity end.');
       return undefined;
     }
-    const res = {
-      type: 'rect', label: `custom`,
-      id: `custom`, data: [{x, y, color: this.colorsHex.custom, label: actualPdb}], isOpen: true,
+    this.idCustomUnit += 1;
+    return {
+      type: 'rect',
+      label: this.custom.labelUnit,
+      id: this.custom.labelUnit,
+      data: [{x, y, color: this.colorsHex.custom, label: this.idCustomUnit}],
+      isOpen: true,
       sidebar: [
         {
           id: `drop-One`,
@@ -56,15 +67,65 @@ export class FeatureViewerModel {
           id: 'drop-Three',
           content: `<i class="fa fa-tint" id="cThree"></i>`
         },
-        {
-          id: 'drop-paint',
-          content: `<a id="usr"></a>`
-        }
+        // {
+        //   id: 'c-paint',
+        //   content: `<a id="usr"></a>`
+        // }
 
       ]
     };
 
-    return res;
+  }
+
+
+  /** Custom insertions */
+  static buildCusInsertion(start: string, end: string, sequenceLength: number, actualPdb: string) {
+
+    const x = +start;
+    const y = +end;
+    if (isNaN(x) || isNaN(y)) {
+      Log.w(1, 'non-numeric field for custom entity.');
+      return undefined;
+    }
+
+    if (x < 1 || y > sequenceLength) {
+      Log.w(1, 'out-of-bounds custom entity.');
+      return undefined;
+    }
+
+    if (x >= y) {
+      Log.w(1, 'entity start is after entity end.');
+      return undefined;
+    }
+    this.idCustomInsertion += 1;
+    return {
+      type: 'rect',
+      label: this.custom.labelIns,
+      id: this.custom.labelIns,
+      data: [{x, y, color: this.colorsHex.custom, label: this.idCustomInsertion}],
+      isOpen: true,
+      sidebar: [
+        {
+          id: `drop-One`,
+          tooltip: actualPdb,
+          content: `<i class="fa fa-tint" id="cOne"></i>`,
+        },
+        {
+          id: 'drop-Two',
+          content: `<i class="fa fa-tint" id="cTwo"></i>`
+
+        },
+        {
+          id: 'drop-Three',
+          content: `<i class="fa fa-tint" id="cThree"></i>`
+        },
+        // {
+        //   id: 'c-paint',
+        //   content: `<a id="usr"></a>`
+        // }
+
+      ]
+    };
 
   }
 
@@ -133,6 +194,7 @@ export class FeatureViewerModel {
         flagAdditional = true;
       }
     }
+
     if (convUnits.length > 0) {
       result.push(FeatureViewerModel.buildEntityFt('units', pdb, chainInfo.chain_id, convUnits));
     }
