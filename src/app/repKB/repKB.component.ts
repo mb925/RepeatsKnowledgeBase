@@ -35,7 +35,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     this.dataFetcher = new DataFetcherModel();
     this.dataDownload = new DataDownloadModel(san);
     this.arrEntry = [];
-    this.clicked = {
+    this.clickedStv = {
       chains: [],
       units: [],
       insertions: [],
@@ -86,7 +86,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   features = ['Choose feature', 'unit', 'insertion'];
   feature;
   arrEntry;
-  clicked;
+  clickedStv;
   arrEntrySqv;
   clickedSqv;
   actualPdb;
@@ -214,7 +214,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     let pdb;
     let ch;
     let cl;
-    this.clicked.user = [];
+    this.clickedStv.user = [];
     this.clickedSqv.user = [];
     this.eraseAll();
     if (event.detail.id[0] === 'c') {
@@ -265,11 +265,12 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   // change colors of selected custom features
   tint(event) {
 
-    if (this.clicked.user.length <= 0) {
+    if (this.clickedStv.user.length <= 0) {
       this.error = 'Click on a custom feature to start (green elements)';
       return;
     }
 
+    // tslint:disable-next-line:prefer-for-of
     for (let i = 0; i < this.featureList[0].data.length; i++) {
       if (this.featureList[0].data[i].label === this.lastSelectCustom.pdb
         && this.featureList[0].data[i].x === this.lastSelectCustom.x
@@ -296,20 +297,20 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     this.featureViewer.addFeatures(this.featureList);
     this.featureViewer.onRegionSelected(r => this.updateTools(r));
     this.featureViewer.onButtonSelected(r => this.paint(r));
-    for (let i = 0; i < this.clicked.user.length; i++) {
-      if (this.clicked.user[i].start_residue_number === this.lastSelectCustom.x
-        &&  this.clicked.user[i].end_residue_number === this.lastSelectCustom.y) {
+    for (let i = 0; i < this.clickedStv.user.length; i++) {
+      if (this.clickedStv.user[i].start_residue_number === this.lastSelectCustom.x
+        &&  this.clickedStv.user[i].end_residue_number === this.lastSelectCustom.y) {
         switch(event.detail.id) {
           case 'drop-One': {
-            this.clicked.user[i].color = this.hexToRgb(FeatureViewerModel.colorsHex.cOne);
+            this.clickedStv.user[i].color = this.hexToRgb(FeatureViewerModel.colorsHex.cOne);
             break;
           }
           case 'drop-Two': {
-            this.clicked.user[i].color = this.hexToRgb(FeatureViewerModel.colorsHex.cTwo);
+            this.clickedStv.user[i].color = this.hexToRgb(FeatureViewerModel.colorsHex.cTwo);
             break;
           }
           case 'drop-Three': {
-            this.clicked.user[i].color = this.hexToRgb(FeatureViewerModel.colorsHex.custom);
+            this.clickedStv.user[i].color = this.hexToRgb(FeatureViewerModel.colorsHex.custom);
             break;
           }
         }
@@ -335,7 +336,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         }
       }
     }
-    this.stvComp.deleteColor(this.arrEntry, this.clicked);
+    this.stvComp.deleteColor(this.arrEntry, this.clickedStv);
     this.updateInput();
   }
 
@@ -435,13 +436,13 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     }
 
     if (type === 'selected') {
+      console.log('holaaaa')
 
       for (let i = 0; i < this.multicustom.length; i++) {
         if (this.multicustom[i].id === this.lastSelectCustom.id) {
           this.multicustom.splice(i, 1);
         }
       }
-
       switch (this.lastSelectCustom.feature) {
         case 'unit':{
           this.removeSelected(this.lastSelectCustom, FeatureViewerModel.custom.labelUnit);
@@ -466,8 +467,8 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       }
     } else {
       this.multicustom = [];
-      this.clicked.user = [];
-      this.stvComp.deleteColor(this.arrEntry, this.clicked);
+      this.clickedStv.user = [];
+      this.stvComp.deleteColor(this.arrEntry, this.clickedStv);
       this.clickedSqv.user = [];
       this.updateInput();
       for (const ft in this.featureList) {
@@ -503,10 +504,10 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         }
       }
     }
-    for (let i = 0; i < this.clicked.user.length; i++) {
-      if (this.clicked.user[i].start_residue_number === element.x
-        &&  this.clicked.user[i].end_residue_number === element.y) {
-        this.clicked.user.splice(i, 1);
+    for (let i = 0; i < this.clickedStv.user.length; i++) {
+      if (this.clickedStv.user[i].start_residue_number === element.x
+        &&  this.clickedStv.user[i].end_residue_number === element.y) {
+        this.clickedStv.user.splice(i, 1);
       }
     }
 
@@ -516,7 +517,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         this.clickedSqv.user.splice(i, 1);
       }
     }
-    this.stvComp.deleteColor(this.arrEntry, this.clicked);
+    this.stvComp.deleteColor(this.arrEntry, this.clickedStv);
     this.updateInput();
   }
 
@@ -657,17 +658,15 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     this.pdb = pdb;
     this.chain = ch;
     const clickedPdb = pdb + ch;
-    this.updateStv(x, y, pdb, ch, identity, rgb, xy);
-    this.updateSqv(x, y, identity, clickedColorHex);
-
-
 
     if (this.actualPdb !== undefined ) {
       const actualPdb = this.actualPdb.substring(0, this.actualPdb.length - 1);
       if(actualPdb !== this.pdb) {
-        this.eraseAll();
+        this.emptyArr();
       }
     }
+    this.updateStv(x, y, pdb, ch, identity, rgb, xy);
+    this.updateSqv(x, y, identity, clickedColorHex);
     this.actualPdb = clickedPdb;
   }
 
@@ -698,7 +697,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
           }
         }
         if (stAut !== undefined && endAut !== undefined) {
-          this.arrEntry = this.stvComp.updateView(xy, this.arrEntry, this.clicked,
+          this.arrEntry = this.stvComp.updateView(xy, this.arrEntry, this.clickedStv,
             pdb.toLowerCase(),
             ch,
             identity, // region or units/insertions
@@ -716,7 +715,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       // convert from uniprot values to pdb
       st = st - this.data.pdbs[pdb].chains[ch].shift;
       end = end - this.data.pdbs[pdb].chains[ch].shift;
-      this.arrEntry = this.stvComp.updateView(xy, this.arrEntry, this.clicked,
+      this.arrEntry = this.stvComp.updateView(xy, this.arrEntry, this.clickedStv,
         pdb.toLowerCase(),
         ch,
         identity, // region or units/insertions
@@ -821,21 +820,22 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
 
   emptyArr() {
     this.arrEntry = [];
-    this.clicked.chains  = [];
-    this.clicked.units = [];
-    this.clicked.user = [];
-    this.clicked.insertions = [];
+    this.clickedStv.chains  = [];
+    this.clickedStv.units = [];
+    this.clickedStv.user = [];
+    this.clickedStv.insertions = [];
+
     this.arrEntrySqv = [];
-    this.clicked.insertions = [];
     this.clickedSqv.chains  = [];
     this.clickedSqv.units = [];
     this.clickedSqv.insertions = [];
+    this.clickedSqv.user = [];
   }
 
   eraseAll() {
     this.emptyArr();
+    this.stvComp.deleteColor(this.arrEntry, this.clickedStv);
     this.updateInput();
-    this.stvComp.deleteColor(this.arrEntry, this.clicked);
   }
 
   hexToRgb(hex) {
