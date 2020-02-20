@@ -1,6 +1,6 @@
 import {ChainInfo, DataDownload, Pdbs, Region, Uniprot} from '../../interfaces/dataDownload.interface';
 import {DomSanitizer} from '@angular/platform-browser';
-import {FeatureViewerModel} from '../featureViewer/featureViewer.model';
+import {FtModel} from '../featureViewer/featureViewer.model';
 
 
 export class DataDownloadModel {
@@ -37,7 +37,7 @@ export class DataDownloadModel {
             const reg: Region = {};
 
             reg.classification = region.classification;
-            const units = FeatureViewerModel.convertEntities(
+            const units = FtModel.convertEntities(
               region.units, data.pdbs[pdb].chains[ch]
             ).convertedEntities;
             if (units.length > 0) {
@@ -45,7 +45,7 @@ export class DataDownloadModel {
               reg.start = reg.units[0].x;
               reg.end = reg.units[reg.units.length - 1].y;
             }
-            const insertions = FeatureViewerModel.convertEntities(
+            const insertions = FtModel.convertEntities(
               region.insertions, data.pdbs[pdb].chains[ch]
             ).convertedEntities;
             if (insertions.length > 0) {

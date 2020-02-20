@@ -2,7 +2,7 @@ import {ChainInfo} from '../../interfaces/dataFetcher.interface';
 import {Entity} from '../../interfaces/pdbEntity.interface';
 import {Log} from '../log.model';
 
-export class FeatureViewerModel {
+export class FtModel {
 
   static unpUrl = 'https://www.uniprot.org/uniprot/';
   static chaUrl = 'http://www.rcsb.org/structure/';
@@ -19,16 +19,14 @@ export class FeatureViewerModel {
     transp:  '#FFFFFFFF'
   };
   static custom = {
-    labelUnit: 'custom-unit',
-    labelIns: 'custom-insertion'
+    idUnit: 'custom-unit',
+    idIns: 'custom-insertion'
   };
   static idCustomUnit = 0;
   static idCustomInsertion = 0;
 
-
-  /** Custom unit */
-  static buildCusUnit(start: string, end: string, sequenceLength: number, actualPdb: string) {
-
+  /** Custom entities */
+  static buildCus(start: string, end: string, sequenceLength: number, actualPdb: string, feature: string, dtLabel: number) {
     const x = +start;
     const y = +end;
     if (isNaN(x) || isNaN(y)) {
@@ -45,64 +43,12 @@ export class FeatureViewerModel {
       Log.w(1, 'entity start is after entity end.');
       return undefined;
     }
-    this.idCustomUnit += 1;
+    dtLabel += 1;
     return {
       type: 'rect',
-      label: this.custom.labelUnit,
-      id: this.custom.labelUnit,
-      data: [{x, y, color: this.colorsHex.custom, label: this.idCustomUnit}],
-      isOpen: true,
-      sidebar: [
-        {
-          id: `drop-One`,
-          tooltip: actualPdb,
-          content: `<i class="fa fa-tint" id="cOne"></i>`,
-        },
-        {
-          id: 'drop-Two',
-          content: `<i class="fa fa-tint" id="cTwo"></i>`
-
-        },
-        {
-          id: 'drop-Three',
-          content: `<i class="fa fa-tint" id="cThree"></i>`
-        },
-        // {
-        //   id: 'c-paint',
-        //   content: `<a id="usr"></a>`
-        // }
-
-      ]
-    };
-
-  }
-
-
-  /** Custom insertions */
-  static buildCusInsertion(start: string, end: string, sequenceLength: number, actualPdb: string) {
-
-    const x = +start;
-    const y = +end;
-    if (isNaN(x) || isNaN(y)) {
-      Log.w(1, 'non-numeric field for custom entity.');
-      return undefined;
-    }
-
-    if (x < 1 || y > sequenceLength) {
-      Log.w(1, 'out-of-bounds custom entity.');
-      return undefined;
-    }
-
-    if (x >= y) {
-      Log.w(1, 'entity start is after entity end.');
-      return undefined;
-    }
-    this.idCustomInsertion += 1;
-    return {
-      type: 'rect',
-      label: this.custom.labelIns,
-      id: this.custom.labelIns,
-      data: [{x, y, color: this.colorsHex.custom, label: this.idCustomInsertion}],
+      label: actualPdb,
+      id: feature,
+      data: [{x, y, color: this.colorsHex.custom, label: dtLabel}],
       isOpen: true,
       sidebar: [
         {
@@ -142,7 +88,7 @@ export class FeatureViewerModel {
         {
           id: 'unpLink',
           tooltip: 'UNIPROT ' + uniprotId,
-          content: `<a target="_blank" href="${FeatureViewerModel.unpUrl}${uniprotId}"><i class="fa fa-link"></i></a>`,
+          content: `<a target="_blank" href="${FtModel.unpUrl}${uniprotId}"><i class="fa fa-link"></i></a>`,
         }
       ]
     };
@@ -166,7 +112,7 @@ export class FeatureViewerModel {
     };
 
     res.data.push({x: chainInfo.unp_start, y: chainInfo.unp_end, color: this.colorsHex.chains});
-    res.sidebar[0].content =  `<a target="_blank" href="${FeatureViewerModel.chaUrl}${pdb}">
+    res.sidebar[0].content =  `<a target="_blank" href="${FtModel.chaUrl}${pdb}">
                                     <i style="margin-top:5px;" class="fa fa-external-link-square" ></i></a>`;
     return res;
   }
@@ -183,24 +129,24 @@ export class FeatureViewerModel {
     const convIns = [];
     for (const region of regions) {
 
-      obj = FeatureViewerModel.convertEntities(region.units, chainInfo);
+      obj = FtModel.convertEntities(region.units, chainInfo);
       Array.prototype.push.apply(convUnits, obj.convertedEntities);
       if (obj.flagAdditional === false) {
-        obj = FeatureViewerModel.convertEntities(region.insertions, chainInfo);
+        obj = FtModel.convertEntities(region.insertions, chainInfo);
         Array.prototype.push.apply(convIns, obj.convertedEntities);
       } else {
-        obj = FeatureViewerModel.convertEntities(region.insertions, chainInfo);
+        obj = FtModel.convertEntities(region.insertions, chainInfo);
         Array.prototype.push.apply(convIns, obj.convertedEntities);
         flagAdditional = true;
       }
     }
 
     if (convUnits.length > 0) {
-      result.push(FeatureViewerModel.buildEntityFt('units', pdb, chainInfo.chain_id, convUnits));
+      result.push(FtModel.buildEntityFt('units', pdb, chainInfo.chain_id, convUnits));
     }
 
     if (convIns.length > 0) {
-      result.push(FeatureViewerModel.buildEntityFt('insertions', pdb, chainInfo.chain_id, convIns));
+      result.push(FtModel.buildEntityFt('insertions', pdb, chainInfo.chain_id, convIns));
     }
     return [result, flagAdditional];
 
@@ -241,7 +187,7 @@ export class FeatureViewerModel {
           {
             id: `rpLink-${pdb}-${chain}`,
             tooltip: `RpsDb ${pdb}-${chain}`,
-            content: `<a target="_blank" href="${FeatureViewerModel.pdbUrl}${pdb}${chain}">
+            content: `<a target="_blank" href="${FtModel.pdbUrl}${pdb}${chain}">
                     <i class="fa fa-external-link"></i></a>`
           },
           {
@@ -262,7 +208,7 @@ export class FeatureViewerModel {
           {
             id: `rpLink-${pdb}-${chain}`,
             tooltip: `RpsDb ${pdb}-${chain}`,
-            content: `<a target="_blank" href="${FeatureViewerModel.pdbUrl}${pdb}${chain}">
+            content: `<a target="_blank" href="${FtModel.pdbUrl}${pdb}${chain}">
                     <i class="fa fa-external-link" aria-hidden="true"></i></a>` // RepeatsDb
           }
         ]
@@ -278,8 +224,8 @@ export class FeatureViewerModel {
 
     for (const entity of entities) {
 
-      start = FeatureViewerModel.convertBound(entity.start, convObj.aut_to_unp);
-      end = FeatureViewerModel.convertBound(entity.end, convObj.aut_to_unp);
+      start = FtModel.convertBound(entity.start, convObj.aut_to_unp);
+      end = FtModel.convertBound(entity.end, convObj.aut_to_unp);
 
       if (start === undefined && end === undefined) {
         // Log.w(1, 'unit completely outside the uniprot.');

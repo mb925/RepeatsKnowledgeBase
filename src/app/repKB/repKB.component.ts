@@ -5,7 +5,7 @@ import {ChainInfo, DataFetcher, PdbInfo, PdbsDict, UniprotInfo} from '../interfa
 import {DataFetcherModel} from '../models/dataFetcher/dataFetcher.model';
 import {DataDownloadModel} from '../models/dataDownload/dataDownload.model';
 import {StrucViewComponent} from '../structureViewer/struc-view.component';
-import {FeatureViewerModel} from '../models/featureViewer/featureViewer.model';
+import {FtModel} from '../models/featureViewer/featureViewer.model';
 import {Log} from '../models/log.model';
 import {pluck, takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
@@ -127,7 +127,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
 
       // fill Feature Viewer
       const featureList = [];
-      featureList.push(FeatureViewerModel.buildUnpFt(this.uniprotId, this.currentUniprot.sequence.length));
+      featureList.push(FtModel.buildUnpFt(this.uniprotId, this.currentUniprot.sequence.length));
 
       let chFeature;
       let pdbInfo: PdbInfo;
@@ -137,10 +137,10 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         pdbInfo = data.pdbs[pdb];
         for (const chain of this.currentUniprot.pdbs[pdb].sort()) {
           chainInfo = pdbInfo.chains[chain];
-          chFeature = FeatureViewerModel.buildChFt(pdb, chainInfo);
+          chFeature = FtModel.buildChFt(pdb, chainInfo);
           let subFt;
           let tooltip;
-          [subFt, tooltip] = FeatureViewerModel.buildRegFt(pdb, chainInfo);
+          [subFt, tooltip] = FtModel.buildRegFt(pdb, chainInfo);
 
           if (tooltip) {
             chFeature.sidebar[0].datax = `${chainInfo.unp_start}`,
@@ -150,18 +150,18 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
                                             <i data-id="ch"
                                               data-pdb="${pdb}-${chainInfo.chain_id}"
                                               class="fa fa-paint-brush aria-hidden="true"></i></a>
-                                            <a href="${FeatureViewerModel.pdbUrl}${pdb}${chain}">`;
+                                            <a href="${FtModel.pdbUrl}${pdb}${chain}">`;
             chFeature.sidebar.push({
               id: `rpLink ${pdb}-${chain}`,
               tooltip: `RpsDb ${pdb}-${chain}`,
-              content: `<a target="_blank" href="${FeatureViewerModel.pdbUrl}${pdb}${chain}">
+              content: `<a target="_blank" href="${FtModel.pdbUrl}${pdb}${chain}">
                     <i style="margin-top: 6px" class="fa fa-external-link"></i></a>` // RepeatsDb
             });
             chFeature.sidebar[1].tooltip = pdb + chain + ' | RpsDb additional info';
 
           }
           if (subFt.length > 0) {
-            [chFeature.subfeatures, tooltip] = FeatureViewerModel.buildRegFt(pdb, chainInfo);
+            [chFeature.subfeatures, tooltip] = FtModel.buildRegFt(pdb, chainInfo);
           }
           featureList.push(chFeature);
         }
@@ -277,15 +277,15 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         && this.featureList[0].data[i].y === this.lastSelectCustom.y) {
         switch(event.detail.id) {
           case 'drop-One': {
-            this.featureList[0].data[i].color = FeatureViewerModel.colorsHex.cOne;
+            this.featureList[0].data[i].color = FtModel.colorsHex.cOne;
             break;
           }
           case 'drop-Two': {
-            this.featureList[0].data[i].color = FeatureViewerModel.colorsHex.cTwo;
+            this.featureList[0].data[i].color = FtModel.colorsHex.cTwo;
             break;
           }
           case 'drop-Three': {
-            this.featureList[0].data[i].color = FeatureViewerModel.colorsHex.custom;
+            this.featureList[0].data[i].color = FtModel.colorsHex.custom;
             break;
           }
         }
@@ -297,40 +297,42 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     this.featureViewer.addFeatures(this.featureList);
     this.featureViewer.onRegionSelected(r => this.updateTools(r));
     this.featureViewer.onButtonSelected(r => this.paint(r));
+    // tslint:disable-next-line:prefer-for-of
     for (let i = 0; i < this.clickedStv.user.length; i++) {
       if (this.clickedStv.user[i].start_residue_number === this.lastSelectCustom.x
         &&  this.clickedStv.user[i].end_residue_number === this.lastSelectCustom.y) {
         switch(event.detail.id) {
           case 'drop-One': {
-            this.clickedStv.user[i].color = this.hexToRgb(FeatureViewerModel.colorsHex.cOne);
+            this.clickedStv.user[i].color = this.hexToRgb(FtModel.colorsHex.cOne);
             break;
           }
           case 'drop-Two': {
-            this.clickedStv.user[i].color = this.hexToRgb(FeatureViewerModel.colorsHex.cTwo);
+            this.clickedStv.user[i].color = this.hexToRgb(FtModel.colorsHex.cTwo);
             break;
           }
           case 'drop-Three': {
-            this.clickedStv.user[i].color = this.hexToRgb(FeatureViewerModel.colorsHex.custom);
+            this.clickedStv.user[i].color = this.hexToRgb(FtModel.colorsHex.custom);
             break;
           }
         }
 
       }
     }
+    // tslint:disable-next-line:prefer-for-of
     for (let i = 0; i < this.clickedSqv.user.length; i++) {
       const reg = this.lastSelectCustom.x + '-' + this.lastSelectCustom.y;
       if (this.clickedSqv.user[i].reg === reg) {
         switch(event.detail.id) {
           case 'drop-One': {
-            this.clickedSqv.user[i].cl = FeatureViewerModel.colorsHex.cOne;
+            this.clickedSqv.user[i].cl = FtModel.colorsHex.cOne;
             break;
           }
           case 'drop-Two': {
-            this.clickedSqv.user[i].cl = FeatureViewerModel.colorsHex.cTwo;
+            this.clickedSqv.user[i].cl = FtModel.colorsHex.cTwo;
             break;
           }
           case 'drop-Three': {
-            this.clickedSqv.user[i].cl = FeatureViewerModel.colorsHex.custom;
+            this.clickedSqv.user[i].cl = FtModel.colorsHex.custom;
             break;
           }
         }
@@ -354,7 +356,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         this.featureList.unshift(entity)
       }
       this.multicustom.push({id: entity.data[0].label, pdb: this.actualPdb,
-        x: +this.stUnp, y: +this.endUnp, color: FeatureViewerModel.colorsHex.custom, feature: this.feature});
+        x: +this.stUnp, y: +this.endUnp, color: FtModel.colorsHex.custom, feature: this.feature});
     }
   }
   addCustom() {
@@ -396,13 +398,15 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     let ftIns;
     switch(this.feature) {
       case 'unit': {
-        ftUnit = FeatureViewerModel.buildCusUnit(this.stUnp, this.endUnp, this.currentUniprot.sequence.length, this.actualPdb);
-        this.addCusEntity(ftUnit, FeatureViewerModel.custom.labelUnit);
+        ftUnit = FtModel.buildCus(this.stUnp, this.endUnp, this.currentUniprot.sequence.length,
+          this.actualPdb, FtModel.custom.idUnit, FtModel.idCustomUnit);
+        this.addCusEntity(ftUnit, FtModel.custom.idUnit);
         break;
       }
       case 'insertion': {
-        ftIns = FeatureViewerModel.buildCusInsertion(this.stUnp, this.endUnp, this.currentUniprot.sequence.length, this.actualPdb);
-        this.addCusEntity(ftIns, FeatureViewerModel.custom.labelIns);
+        ftIns = FtModel.buildCus(this.stUnp, this.endUnp, this.currentUniprot.sequence.length,
+          this.actualPdb, FtModel.custom.idIns, FtModel.idCustomInsertion);
+        this.addCusEntity(ftIns, FtModel.custom.idIns);
         break;
       }
     }
@@ -436,32 +440,33 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     }
 
     if (type === 'selected') {
-      console.log('holaaaa')
 
       for (let i = 0; i < this.multicustom.length; i++) {
         if (this.multicustom[i].id === this.lastSelectCustom.id) {
           this.multicustom.splice(i, 1);
         }
       }
+
       switch (this.lastSelectCustom.feature) {
-        case 'unit':{
-          this.removeSelected(this.lastSelectCustom, FeatureViewerModel.custom.labelUnit);
+        case 'custom-unit':{
+          this.removeSelected(this.lastSelectCustom, FtModel.custom.idUnit);
           break;
         }
-        case 'insertion':{
-          this.removeSelected(this.lastSelectCustom, FeatureViewerModel.custom.labelIns);
+        case 'custom-insertion':{
+          this.removeSelected(this.lastSelectCustom, FtModel.custom.idIns);
           break;
         }
       }
     } else if (type === 'last') {
       const last = this.multicustom.pop();
+
       switch (last.feature) {
         case 'unit':{
-          this.removeSelected(last, FeatureViewerModel.custom.labelUnit);
+          this.removeSelected(last, FtModel.custom.idUnit);
           break;
         }
         case 'insertion':{
-          this.removeSelected(last, FeatureViewerModel.custom.labelIns);
+          this.removeSelected(last, FtModel.custom.idIns);
           break;
         }
       }
@@ -472,8 +477,8 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       this.clickedSqv.user = [];
       this.updateInput();
       for (const ft in this.featureList) {
-        if (this.featureList[ft].id === FeatureViewerModel.custom.labelUnit ||
-            this.featureList[ft].id === FeatureViewerModel.custom.labelIns) {
+        if (this.featureList[ft].id === FtModel.custom.idUnit ||
+            this.featureList[ft].id === FtModel.custom.idIns) {
           this.featureList.splice(+ft, 1)
         }
       }
@@ -490,6 +495,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   }
 
   removeSelected(element, check) {
+    console.log(this.featureList);
     let flag = false;
     for (const ft in this.featureList) {
       if (this.featureList[ft].id === check) {
@@ -500,14 +506,17 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
             if (this.featureList[ft].data.length === 0) {
               this.featureList.splice(i, 1)
             }
+            break;
           }
         }
       }
     }
+
     for (let i = 0; i < this.clickedStv.user.length; i++) {
-      if (this.clickedStv.user[i].start_residue_number === element.x
-        &&  this.clickedStv.user[i].end_residue_number === element.y) {
+      if (this.clickedStv.user[i].start_residue_number === element.x - 1
+        &&  this.clickedStv.user[i].end_residue_number === element.y - 1) {
         this.clickedStv.user.splice(i, 1);
+        i--;
       }
     }
 
@@ -515,6 +524,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       const reg = element.x + '-' + element.y;
       if (this.clickedSqv.user[i].reg === reg) {
         this.clickedSqv.user.splice(i, 1);
+        i--;
       }
     }
     this.stvComp.deleteColor(this.arrEntry, this.clickedStv);
@@ -528,8 +538,12 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       this.updateView(this.event);
     }
 
+
+
     // PDB TO UNIPROT
     if (this.pdb !== undefined && this.data.pdbs[this.pdb] !== undefined) {
+      // console.log(this.pdb)
+      // console.log(this.chain)
 
       this.alert = '';
       this.disStartPdb = null;
@@ -610,6 +624,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   }
 
   updateTools(r) {
+    console.log(r)
     // preprocess input
     const x = r.detail.selectedRegion.x;
     const y = r.detail.selectedRegion.y;
@@ -624,12 +639,13 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     let label;
     const xy = -1;
     // if custom label, take name of last clicked pdb
-    if (r.detail.label === FeatureViewerModel.custom.labelUnit || r.detail.label === FeatureViewerModel.custom.labelIns) {
+    if (r.detail.id === FtModel.custom.idUnit || r.detail.label === FtModel.custom.idIns) {
       this.error = '';
-      if (clickedColorHex === FeatureViewerModel.colorsHex.transp) {
+      if (clickedColorHex === FtModel.colorsHex.transp) {
         return;
       }
-      this.lastSelectCustom = {id: r.detail.selectedRegion.label, pdb: r.detail.selectedRegion.label, x, y, feature: r.detail.label};
+
+      this.lastSelectCustom = {id: r.detail.selectedRegion.label, pdb: r.detail.label, x, y, feature: r.detail.id};
       label = this.lastClicked;
       label = 'c-' + label;
 
@@ -653,6 +669,8 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     }
     rgb = {r: clickedColorRgb.r, g: clickedColorRgb.g, b: clickedColorRgb.b};
 
+
+
     [pdb, ch] = label.split('-');
 
     this.pdb = pdb;
@@ -663,6 +681,16 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       const actualPdb = this.actualPdb.substring(0, this.actualPdb.length - 1);
       if(actualPdb !== this.pdb) {
         this.emptyArr();
+      } else if (this.actualPdb !== clickedPdb){
+        this.arrEntry = [];
+        this.clickedStv.chains  = [];
+        this.clickedStv.units = [];
+        this.clickedStv.insertions = [];
+
+        this.arrEntrySqv = [];
+        this.clickedSqv.chains  = [];
+        this.clickedSqv.units = [];
+        this.clickedSqv.insertions = [];
       }
     }
     this.updateStv(x, y, pdb, ch, identity, rgb, xy);
@@ -713,6 +741,8 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     } else {
       // coloring structure viewer
       // convert from uniprot values to pdb
+      console.log(pdb)
+
       st = st - this.data.pdbs[pdb].chains[ch].shift;
       end = end - this.data.pdbs[pdb].chains[ch].shift;
       this.arrEntry = this.stvComp.updateView(xy, this.arrEntry, this.clickedStv,
