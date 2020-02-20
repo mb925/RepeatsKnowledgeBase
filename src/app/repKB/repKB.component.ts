@@ -495,7 +495,6 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   }
 
   removeSelected(element, check) {
-    console.log(this.featureList);
     let flag = false;
     for (const ft in this.featureList) {
       if (this.featureList[ft].id === check) {
@@ -511,11 +510,15 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         }
       }
     }
+    console.log(element)
+    // const toUnp = this.data.pdbs[this.pdb].chains[this.chain].unp_to_aut;
 
+    console.log(this.clickedStv.user)
     for (let i = 0; i < this.clickedStv.user.length; i++) {
-      if (this.clickedStv.user[i].start_residue_number === element.x - 1
-        &&  this.clickedStv.user[i].end_residue_number === element.y - 1) {
+      if (this.clickedStv.user[i].start_residue_number === element.x
+        &&  this.clickedStv.user[i].end_residue_number === element.y) {
         this.clickedStv.user.splice(i, 1);
+        console.log(i);
         i--;
       }
     }
@@ -542,8 +545,6 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
 
     // PDB TO UNIPROT
     if (this.pdb !== undefined && this.data.pdbs[this.pdb] !== undefined) {
-      // console.log(this.pdb)
-      // console.log(this.chain)
 
       this.alert = '';
       this.disStartPdb = null;
@@ -624,7 +625,6 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   }
 
   updateTools(r) {
-    console.log(r)
     // preprocess input
     const x = r.detail.selectedRegion.x;
     const y = r.detail.selectedRegion.y;
@@ -706,25 +706,25 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         // coloring structure viewer
         // TODO to test this conversion: need and example with a pdb with chains of different length (overlapping but not completely)
         // you can run a script to see if you find them
-        let stAut;
-        let endAut;
+        let stUnp;
+        let endUnp;
         for (let i = st; st <= end; i ++) {
-          if (i in this.data.pdbs[pdb].chains[chain].unp_to_aut) {
-            stAut = st - this.data.pdbs[pdb].chains[ch].shift;
+          if (i in this.data.pdbs[pdb].chains[chain].aut_to_unp) {
+            stUnp = this.data.pdbs[pdb].chains[chain].aut_to_unp[i];
             break;
           } else {
             return;
           }
         }
         for (let i = end; end >= st; i --) {
-          if (end in this.data.pdbs[pdb].chains[chain].unp_to_aut) {
-            endAut = end - this.data.pdbs[pdb].chains[ch].shift;
+          if (end in this.data.pdbs[pdb].chains[chain].aut_to_unp) {
+            endUnp = this.data.pdbs[pdb].chains[chain].aut_to_unp[i];
             break;
           } else {
             return;
           }
         }
-        if (stAut !== undefined && endAut !== undefined) {
+        if (stUnp !== undefined && endUnp !== undefined) {
           this.arrEntry = this.stvComp.updateView(xy, this.arrEntry, this.clickedStv,
             pdb.toLowerCase(),
             ch,
@@ -732,8 +732,8 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
             {
               entity_id: this.data.pdbs[pdb].chains[chain].entity_id.toString(),
               struct_asym_id: this.data.pdbs[pdb].chains[chain].struct_asym_id,
-              start_residue_number: stAut,
-              end_residue_number: endAut,
+              start_residue_number: stUnp,
+              end_residue_number: endUnp,
               color: rgb
             });
         }
@@ -741,7 +741,6 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     } else {
       // coloring structure viewer
       // convert from uniprot values to pdb
-      console.log(pdb)
 
       st = st - this.data.pdbs[pdb].chains[ch].shift;
       end = end - this.data.pdbs[pdb].chains[ch].shift;
