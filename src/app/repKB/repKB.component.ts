@@ -708,20 +708,21 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         // you can run a script to see if you find them
         let stUnp;
         let endUnp;
-        for (let i = st; st <= end; i ++) {
+        for (let i = st; i <= end; i ++) {
+
           if (i in this.data.pdbs[pdb].chains[chain].aut_to_unp) {
             stUnp = this.data.pdbs[pdb].chains[chain].aut_to_unp[i];
             break;
           } else {
-            return;
+            this.error = 'this feature is not fully visible on the selected pdb structure';
           }
         }
-        for (let i = end; end >= st; i --) {
+        for (let i = end; i >= st; i --) {
           if (end in this.data.pdbs[pdb].chains[chain].aut_to_unp) {
             endUnp = this.data.pdbs[pdb].chains[chain].aut_to_unp[i];
             break;
           } else {
-            return;
+            this.error = 'this feature is not fully visible on the selected pdb structure';
           }
         }
         if (stUnp !== undefined && endUnp !== undefined) {
