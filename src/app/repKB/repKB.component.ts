@@ -668,25 +668,25 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
 
   updateStv(st, end, pdb, ch, identity, rgb, xy) {
 
-
-
+    const chains = this.data.pdbs[pdb].chains;
     if (identity === 'usr') {
       // tslint:disable-next-line:forin
       for (const chain in this.data.pdbs[pdb].chains) {
-        // coloring structure viewer
         let stAut;
         let endAut;
+
+        // coloring structure viewer
         for (let i = st; i <= end; i ++) {
-          if (i in this.data.pdbs[pdb].chains[chain].unp_to_aut) {
-            stAut = this.data.pdbs[pdb].chains[chain].unp_to_aut[i];
+          if (i in chains[chain].unp_to_aut) {
+            stAut = chains[chain].unp_to_aut[i];
             break;
           } else {
             this.error = 'this feature is not fully visible on the selected pdb structure';
           }
         }
         for (let i = end; i >= st; i --) {
-          if (end in this.data.pdbs[pdb].chains[chain].unp_to_aut) {
-            endAut = this.data.pdbs[pdb].chains[chain].unp_to_aut[i];
+          if (end in chains[chain].unp_to_aut) {
+            endAut = chains[chain].unp_to_aut[i];
             break;
           } else {
             this.error = 'this feature is not fully visible on the selected pdb structure';
@@ -694,17 +694,13 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         }
 
         if (stAut !== undefined && endAut !== undefined) {
+          const stvInfo = RepKbClModel.createStvInfo(rgb, chains, chain, stAut, endAut);
           this.arrEntryStv = this.stvComp.updateView(xy, this.arrEntryStv, this.stv,
             pdb.toLowerCase(),
             ch,
             identity, // region or units/insertions
-            {
-              entity_id: this.data.pdbs[pdb].chains[chain].entity_id.toString(),
-              struct_asym_id: this.data.pdbs[pdb].chains[chain].struct_asym_id,
-              start_residue_number: stAut,
-              end_residue_number: endAut,
-              color: rgb
-            });
+            stvInfo
+          );
         }
       }
     } else {
@@ -712,17 +708,12 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       // convert from uniprot values to pdb
       st = st - this.data.pdbs[pdb].chains[ch].shift;
       end = end - this.data.pdbs[pdb].chains[ch].shift;
+      const stvInfo = RepKbClModel.createStvInfo(rgb, chains, ch, st, end);
       this.arrEntryStv = this.stvComp.updateView(xy, this.arrEntryStv, this.stv,
         pdb.toLowerCase(),
         ch,
         identity, // region or units/insertions
-        {
-          entity_id: this.data.pdbs[pdb].chains[ch].entity_id.toString(),
-          struct_asym_id: this.data.pdbs[pdb].chains[ch].struct_asym_id,
-          start_residue_number: st,
-          end_residue_number: end,
-          color: rgb
-        });
+        stvInfo);
     }
   }
 

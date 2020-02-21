@@ -26,7 +26,6 @@ export class StrucViewComponent implements OnInit {
   }
 
   async updateView(xy, arr, ck, pdbName, ch, id, obj) {
-    console.log(obj)
 
     RepKbClModel.insElem(id, arr, obj,ck, 'stv', true);
     arr = RepKbClModel.pushArr(arr, ck,true);

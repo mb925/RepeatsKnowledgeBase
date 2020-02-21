@@ -1,18 +1,24 @@
+import {Stv} from '../interfaces/repKbColors.interface';
+
 export class RepKbClModel {
 
-  static hexToRgb(hex) {
-
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result ? {
-    r: parseInt(result[1], 16),
-    g: parseInt(result[2], 16),
-    b: parseInt(result[3], 16)
-   } : null;
+  static createStvInfo (rgb, chains, ch, st, end) {
+    const stvInfo: Stv = {
+      entity_id: '',
+      struct_asym_id: '',
+      start_residue_number: 0,
+      end_residue_number: 0,
+      color: rgb
+    };
+    stvInfo.entity_id = chains[ch].entity_id.toString();
+    stvInfo.struct_asym_id = chains[ch].struct_asym_id;
+    stvInfo.start_residue_number = st;
+    stvInfo.end_residue_number = end;
+    return stvInfo;
   }
 
   static insElem(id, arr, obj, ck, tool, user) {
-    console.log(tool)
-    console.log(id)
+
     if (id === 'ch') {
       RepKbClModel.insertClickElem(obj, ck.chains, tool);
     } else if (id === 'uni') {
@@ -20,7 +26,6 @@ export class RepKbClModel {
     } else if (id === 'ins') {
       RepKbClModel.insertClickElem(obj, ck.insertions, tool);
     } else if (id === 'usr' && user) {
-      console.log('usr')
       RepKbClModel.insertClickElem(obj, ck.user, tool);
     }
   }
@@ -32,8 +37,6 @@ export class RepKbClModel {
       elem = arr[i];
     switch(condition){
       case 'stv': {
-        console.log(obj.struct_asym_id)
-        console.log(elem.struct_asym_id)
         if ((obj.struct_asym_id !==  elem.struct_asym_id)
           || (obj.start_residue_number !==  elem.start_residue_number)
           || (obj.end_residue_number !==  elem.end_residue_number)
@@ -59,7 +62,6 @@ export class RepKbClModel {
       delete obj.pdb;
       arr.push(obj);
     }
-    console.log(arr)
   }
 
   static pushArr(arr, ck, user) {
@@ -90,4 +92,15 @@ export class RepKbClModel {
 
     return [arrEntryStv, arrEntrySqv, stv, sqv]
   }
+
+  static hexToRgb(hex) {
+
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
+  }
+
 }
