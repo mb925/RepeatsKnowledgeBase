@@ -518,7 +518,6 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     }
 
 
-
     // PDB TO UNIPROT
     if (this.pdb !== undefined && this.data.pdbs[this.pdb] !== undefined) {
 
@@ -669,56 +668,43 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
 
   updateStv(st, end, pdb, ch, identity, rgb, xy) {
 
-    let stvInfo: Stv;
-    stvInfo = {
-      entity_id: '',
-      struct_asym_id: '',
-      start_residue_number: 0,
-      end_residue_number: 0,
-      color: rgb
-    };
+
 
     if (identity === 'usr') {
       // tslint:disable-next-line:forin
       for (const chain in this.data.pdbs[pdb].chains) {
-
         // coloring structure viewer
-        let stUnp;
-        let endUnp;
+        let stAut;
+        let endAut;
         for (let i = st; i <= end; i ++) {
-
-          if (i in this.data.pdbs[pdb].chains[chain].aut_to_unp) {
-            stUnp = this.data.pdbs[pdb].chains[chain].aut_to_unp[i];
+          if (i in this.data.pdbs[pdb].chains[chain].unp_to_aut) {
+            stAut = this.data.pdbs[pdb].chains[chain].unp_to_aut[i];
             break;
           } else {
             this.error = 'this feature is not fully visible on the selected pdb structure';
           }
         }
         for (let i = end; i >= st; i --) {
-          if (end in this.data.pdbs[pdb].chains[chain].aut_to_unp) {
-            endUnp = this.data.pdbs[pdb].chains[chain].aut_to_unp[i];
+          if (end in this.data.pdbs[pdb].chains[chain].unp_to_aut) {
+            endAut = this.data.pdbs[pdb].chains[chain].unp_to_aut[i];
             break;
           } else {
             this.error = 'this feature is not fully visible on the selected pdb structure';
           }
         }
 
-        if (stUnp !== undefined && endUnp !== undefined) {
-
-          stvInfo.entity_id = this.data.pdbs[pdb].chains[chain].entity_id.toString();
-          stvInfo.struct_asym_id = this.data.pdbs[pdb].chains[chain].struct_asym_id;
-          stvInfo.start_residue_number = stUnp;
-          stvInfo.end_residue_number = endUnp;
-
-          this.arrEntryStv = this.stvComp.updateView(
-            xy,
-            this.arrEntryStv,
-            this.stv,
+        if (stAut !== undefined && endAut !== undefined) {
+          this.arrEntryStv = this.stvComp.updateView(xy, this.arrEntryStv, this.stv,
             pdb.toLowerCase(),
             ch,
             identity, // region or units/insertions
-            stvInfo
-          );
+            {
+              entity_id: this.data.pdbs[pdb].chains[chain].entity_id.toString(),
+              struct_asym_id: this.data.pdbs[pdb].chains[chain].struct_asym_id,
+              start_residue_number: stAut,
+              end_residue_number: endAut,
+              color: rgb
+            });
         }
       }
     } else {
@@ -726,16 +712,17 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       // convert from uniprot values to pdb
       st = st - this.data.pdbs[pdb].chains[ch].shift;
       end = end - this.data.pdbs[pdb].chains[ch].shift;
-      stvInfo.entity_id = this.data.pdbs[pdb].chains[ch].entity_id.toString();
-      stvInfo.struct_asym_id = this.data.pdbs[pdb].chains[ch].struct_asym_id;
-      stvInfo.start_residue_number = st;
-      stvInfo.end_residue_number = end;
       this.arrEntryStv = this.stvComp.updateView(xy, this.arrEntryStv, this.stv,
         pdb.toLowerCase(),
         ch,
         identity, // region or units/insertions
-        stvInfo
-      );
+        {
+          entity_id: this.data.pdbs[pdb].chains[ch].entity_id.toString(),
+          struct_asym_id: this.data.pdbs[pdb].chains[ch].struct_asym_id,
+          start_residue_number: st,
+          end_residue_number: end,
+          color: rgb
+        });
     }
   }
 
@@ -772,12 +759,8 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   }
 
   updateInput() {
-    this.arrEntrySqv = [];
-    Array.prototype.push.apply(this.arrEntrySqv, this.sqv.chains);
-    Array.prototype.push.apply(this.arrEntrySqv, this.sqv.units);
-    Array.prototype.push.apply(this.arrEntrySqv, this.sqv.insertions);
-    Array.prototype.push.apply(this.arrEntrySqv, this.sqv.user);
 
+    this.arrEntrySqv = RepKbClModel.pushArr(this.arrEntrySqv, this.sqv,true);
     const colors = {};
 
     for (const e of this.arrEntrySqv) {

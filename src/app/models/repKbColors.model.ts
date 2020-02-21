@@ -11,8 +11,8 @@ export class RepKbClModel {
   }
 
   static insElem(id, arr, obj, ck, tool, user) {
-
-
+    console.log(tool)
+    console.log(id)
     if (id === 'ch') {
       RepKbClModel.insertClickElem(obj, ck.chains, tool);
     } else if (id === 'uni') {
@@ -20,18 +20,20 @@ export class RepKbClModel {
     } else if (id === 'ins') {
       RepKbClModel.insertClickElem(obj, ck.insertions, tool);
     } else if (id === 'usr' && user) {
+      console.log('usr')
       RepKbClModel.insertClickElem(obj, ck.user, tool);
     }
   }
 
   static insertClickElem(obj, arr, condition) {
-
     let elem;
     let flag = true;
     for (let i = 0; i < arr.length; i++) {
       elem = arr[i];
     switch(condition){
       case 'stv': {
+        console.log(obj.struct_asym_id)
+        console.log(elem.struct_asym_id)
         if ((obj.struct_asym_id !==  elem.struct_asym_id)
           || (obj.start_residue_number !==  elem.start_residue_number)
           || (obj.end_residue_number !==  elem.end_residue_number)
@@ -57,6 +59,7 @@ export class RepKbClModel {
       delete obj.pdb;
       arr.push(obj);
     }
+    console.log(arr)
   }
 
   static pushArr(arr, ck, user) {
