@@ -216,7 +216,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       for (const item of xy) {
 
 
-        this.updateSqv(item.x, item.y, item.color, 'usr');
+        this.updateSqv(item.x, item.y, 'usr', item.color);
         cl = RepKbClModel.hexToRgb(item.color);
         this.updateStv(item.x, item.y, pdb, ch, 'usr', {r: cl.r, g: cl.g, b: cl.b}, xy.length);
       }
@@ -226,7 +226,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       if (event.detail.id[0] === 'u' ) {
         const xy = JSON.parse(event.detail.dataxy);
         for (const unit of xy) {
-          this.updateSqv(unit.x, unit.y, unit.color, 'uni');
+          this.updateSqv(unit.x, unit.y, 'uni', unit.color);
           cl = RepKbClModel.hexToRgb(unit.color);
           this.updateStv(unit.x, unit.y, pdb, ch, 'uni', {r: cl.r, g: cl.g, b: cl.b}, xy.length);
         }
@@ -234,7 +234,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         const xy = JSON.parse(event.detail.dataxy);
         for (const ins of xy) {
           cl = RepKbClModel.hexToRgb(ins.color);
-          this.updateSqv(ins.x, ins.y, ins.color, 'ins');
+          this.updateSqv(ins.x, ins.y, 'ins', ins.color);
           this.updateStv(ins.x, ins.y, pdb, ch, 'ins', {r: cl.r, g: cl.g, b: cl.b}, xy.length);
         }
       }
@@ -646,8 +646,6 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     }
     rgb = {r: clickedColorRgb.r, g: clickedColorRgb.g, b: clickedColorRgb.b};
 
-
-
     [pdb, ch] = label.split('-');
 
     this.pdb = pdb;
@@ -670,6 +668,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   }
 
   updateStv(st, end, pdb, ch, identity, rgb, xy) {
+
     let stvInfo: Stv;
     stvInfo = {
       entity_id: '',
@@ -743,39 +742,9 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   updateSqv(st, end, identity, cl) {
     const reg = st + '-' + end;
     const obj = {reg, cl};
-    if (identity === 'ch') {
-      this.insertClickElem(obj, this.sqv.chains);
-    } else if (identity === 'uni') {
-      this.insertClickElem(obj, this.sqv.units);
-    } else if (identity === 'ins') {
-      this.insertClickElem(obj, this.sqv.insertions);
-    } else if (identity === 'usr') {
-      this.insertClickElem(obj, this.sqv.user);
-    }
-
+    RepKbClModel.insElem(identity, this.arrEntrySqv, obj, this.sqv, 'sqv', true);
     this.updateInput();
   }
-
-  insertClickElem(obj, arr) {
-
-    let elem;
-    let flag = true;
-    for (let i = 0; i < arr.length; i++) {
-      elem = arr[i];
-      if ((obj.reg !==  elem.reg) && (obj.color !==  elem.reg)) {
-        continue;
-      }
-      // Delete current element and break
-      arr.splice(i, 1);
-      flag = false;
-      break;
-    }
-    if (flag) {
-      delete obj.pdb;
-      arr.push(obj);
-    }
-  }
-
 
   selectedFeature (event: any) {
     this.feature = event.target.value;

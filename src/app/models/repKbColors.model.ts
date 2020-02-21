@@ -11,6 +11,8 @@ export class RepKbClModel {
   }
 
   static insElem(id, arr, obj, ck, tool, user) {
+
+
     if (id === 'ch') {
       RepKbClModel.insertClickElem(obj, ck.chains, tool);
     } else if (id === 'uni') {
@@ -20,7 +22,6 @@ export class RepKbClModel {
     } else if (id === 'usr' && user) {
       RepKbClModel.insertClickElem(obj, ck.user, tool);
     }
-
   }
 
   static insertClickElem(obj, arr, condition) {
@@ -30,7 +31,7 @@ export class RepKbClModel {
     for (let i = 0; i < arr.length; i++) {
       elem = arr[i];
     switch(condition){
-      case 'sqv': {
+      case 'stv': {
         if ((obj.struct_asym_id !==  elem.struct_asym_id)
           || (obj.start_residue_number !==  elem.start_residue_number)
           || (obj.end_residue_number !==  elem.end_residue_number)
@@ -39,7 +40,8 @@ export class RepKbClModel {
         }
         break;
       }
-      case 'stv': {
+      case 'sqv': {
+
         if ((obj.reg !==  elem.reg) && (obj.color !==  elem.reg)) {
           continue;
         }
