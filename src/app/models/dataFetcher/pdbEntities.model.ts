@@ -1,6 +1,6 @@
 import {QueryExtractor} from './queryExecutor.abstract';
 import {Log} from '../log.model';
-import {Entity, PdbEntity, RegionEntity} from '../../interfaces/pdbEntity.interface';
+import {Entity, PdbEntity, RegionEntity} from '../../interfaces/dataFetcher/pdbEntity.interface';
 
 export class PdbEntitiesModel extends QueryExtractor {
 

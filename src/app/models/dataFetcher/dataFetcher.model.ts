@@ -1,10 +1,10 @@
 import {UniprotSequencesModel} from './uniprotSequences.model';
 import {UniprotMappingsModel} from './uniprotMappings.model';
-import {ChainInfo, DataFetcher, PdbInfo, UniprotInfo} from '../../interfaces/dataFetcher.interface';
+import {ChainInfo, DataFetcher, PdbInfo, UniprotInfo} from '../../interfaces/dataFetcher/dataFetcher.interface';
 import {ResidueListsModel} from './residueLists.model';
 import {PdbEntitiesModel} from './pdbEntities.model';
-import {PdbEntity} from '../../interfaces/pdbEntity.interface';
-import {ResidueList} from '../../interfaces/residueList.interface';
+import {PdbEntity} from '../../interfaces/dataFetcher/pdbEntity.interface';
+import {ResidueList} from '../../interfaces/dataFetcher/residueList.interface';
 import {Log} from '../log.model';
 
 export class DataFetcherModel {

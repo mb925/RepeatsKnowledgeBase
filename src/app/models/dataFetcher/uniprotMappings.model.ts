@@ -1,6 +1,6 @@
 import {Log} from '../log.model';
 import {QueryExtractor} from './queryExecutor.abstract';
-import {ChainMapping, PdbMapping, UniprotMapping} from '../../interfaces/uniprotMapping.interface';
+import {ChainMapping, PdbMapping, UniprotMapping} from '../../interfaces/dataFetcher/uniprotMapping.interface';
 
 export class UniprotMappingsModel extends QueryExtractor {
 

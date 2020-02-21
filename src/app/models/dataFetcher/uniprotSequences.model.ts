@@ -1,5 +1,5 @@
 import {Log} from '../log.model';
-import {Uniprot} from '../../interfaces/uniprot.interface';
+import {Uniprot} from '../../interfaces/dataFetcher/uniprot.interface';
 import {QueryExtractor} from './queryExecutor.abstract';
 
 export class UniprotSequencesModel extends QueryExtractor {

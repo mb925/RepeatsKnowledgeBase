@@ -1,6 +1,6 @@
 import {QueryExtractor} from './queryExecutor.abstract';
 import {Log} from '../log.model';
-import {ChainList, MoleculeList, Residue, ResidueList} from '../../interfaces/residueList.interface';
+import {ChainList, MoleculeList, Residue, ResidueList} from '../../interfaces/dataFetcher/residueList.interface';
 
 export class ResidueListsModel extends QueryExtractor {
 

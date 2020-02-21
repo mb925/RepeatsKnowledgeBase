@@ -1,5 +1,5 @@
-import {ChainInfo} from '../../interfaces/dataFetcher.interface';
-import {Entity} from '../../interfaces/pdbEntity.interface';
+import {ChainInfo} from '../../interfaces/dataFetcher/dataFetcher.interface';
+import {Entity} from '../../interfaces/dataFetcher/pdbEntity.interface';
 import {Log} from '../log.model';
 
 export class FtModel {
@@ -7,6 +7,14 @@ export class FtModel {
   static unpUrl = 'https://www.uniprot.org/uniprot/';
   static chaUrl = 'http://www.rcsb.org/structure/';
   static pdbUrl = 'http://repeatsdb.bio.unipd.it/protein/';
+  static fvOptions = {
+    showAxis: true, showSequence: true, toolbar: true,
+    toolbarPosition: 'left', zoomMax: 10, sideBar: 200,
+    flagColor: '#DFD5F5', showSubFeatures: true, backgroundcolor: 'white',
+    flagTrack: 150,
+    flagTrackMobile: 150
+  };
+
   static colorsHex = {
     uniprot: '#70B77E',
     chains: '#D62839',

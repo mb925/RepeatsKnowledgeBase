@@ -1,7 +1,7 @@
 import {AfterViewChecked, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {FeatureViewer} from 'feature-viewer-typescript/lib';
 import {DomSanitizer} from '@angular/platform-browser';
-import {ChainInfo, DataFetcher, PdbInfo, PdbsDict, UniprotInfo} from '../interfaces/dataFetcher.interface';
+import {ChainInfo, DataFetcher, PdbInfo, UniprotInfo} from '../interfaces/dataFetcher/dataFetcher.interface';
 import {DataFetcherModel} from '../models/dataFetcher/dataFetcher.model';
 import {DataDownloadModel} from '../models/dataDownload/dataDownload.model';
 import {StrucViewComponent} from '../structureViewer/struc-view.component';
@@ -10,9 +10,8 @@ import {Log} from '../models/log.model';
 import {pluck, takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
-import { FormGroup, FormBuilder } from '@angular/forms';
-import {lifecycleHookToNodeFlag} from '@angular/compiler/src/view_compiler/provider_compiler';
-
+import {Clicked, Stv} from '../interfaces/repKbColors.interface';
+import {RepKbClModel} from '../models/repKbColors.model';
 
 @Component({
   selector: 'app-reupro',
@@ -25,46 +24,23 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   constructor(private route: ActivatedRoute,
               private san: DomSanitizer,
               private cdRef: ChangeDetectorRef,
-              private stvComp: StrucViewComponent,
-              private formBuilder: FormBuilder) {
+              private stvComp: StrucViewComponent) {
     const destroyed = new Subject<any>();
     this.route.params
       .pipe(takeUntil(destroyed), pluck('id'))
       .subscribe(id => this.uniprotId = id);
-    this.featureList = [];
+
     this.dataFetcher = new DataFetcherModel();
     this.dataDownload = new DataDownloadModel(san);
-    this.arrEntry = [];
-    this.clickedStv = {
-      chains: [],
-      units: [],
-      insertions: [],
-      user: []
-    };
-
-    this.clickedSqv = {
-      chains: [],
-      units: [],
-      insertions: [],
-      user: []
-    };
   }
-
-  static fvOptions = {
-    showAxis: true, showSequence: true, toolbar: true,
-    toolbarPosition: 'left', zoomMax: 10, sideBar: 200,
-    flagColor: '#DFD5F5', showSubFeatures: true, backgroundcolor: 'white',
-    flagTrack: 150,
-    flagTrackMobile: 150
-  };
 
   @Input() event: Event;
   uniprotId: string;
   currentUniprot: UniprotInfo;
   featureList: Array<any>;
   dataFetcher: DataFetcherModel;
-  featureViewer: FeatureViewer;
   dataDownload: DataDownloadModel;
+  featureViewer: FeatureViewer;
   fileJson;
   multifasta;
   multicustom = [];
@@ -85,10 +61,8 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   colorations = ['Choose palette', 'clustal']; // add colorations here
   features = ['Choose feature', 'unit', 'insertion'];
   feature;
-  arrEntry;
-  clickedStv;
+  arrEntryStv;
   arrEntrySqv;
-  clickedSqv;
   actualPdb;
   actualUniprot;
   alert = 'Click on a pdb to start';
@@ -97,8 +71,14 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   disEndPdb= true;
   disStartUnp= true;
   disEndUnp= true;
+  stv: Clicked;
+  sqv: Clicked;
 
   ngOnInit(): void {
+    this.sqv = { chains: [], units: [], insertions: [], user: []};
+    this.stv = { chains: [], units: [], insertions: [], user: []};
+    this.featureList = [];
+    this.arrEntryStv = [];
     this.updateView(this.uniprotId.toUpperCase());
   }
 
@@ -116,14 +96,13 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
 
       this.data = data;
 
-
       // create json data to download
       this.fileJson = this.dataDownload.getJson(data, this.uniprotId);
 
       // new Feature Viewer
       this.currentUniprot = data.uniprots[this.uniprotId];
       delete this.featureViewer;
-      this.featureViewer = new FeatureViewer(this.currentUniprot.sequence, '#fv', RepKBComponent.fvOptions);
+      this.featureViewer = new FeatureViewer(this.currentUniprot.sequence, '#fv', FtModel.fvOptions);
 
       // fill Feature Viewer
       const featureList = [];
@@ -214,8 +193,8 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     let pdb;
     let ch;
     let cl;
-    this.clickedStv.user = [];
-    this.clickedSqv.user = [];
+    this.stv.user = [];
+    this.sqv.user = [];
     this.eraseAll();
     if (event.detail.id[0] === 'c') {
       const xy = [];
@@ -238,7 +217,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
 
 
         this.updateSqv(item.x, item.y, item.color, 'usr');
-        cl = this.hexToRgb(item.color);
+        cl = RepKbClModel.hexToRgb(item.color);
         this.updateStv(item.x, item.y, pdb, ch, 'usr', {r: cl.r, g: cl.g, b: cl.b}, xy.length);
       }
     } else {
@@ -248,13 +227,13 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         const xy = JSON.parse(event.detail.dataxy);
         for (const unit of xy) {
           this.updateSqv(unit.x, unit.y, unit.color, 'uni');
-          cl = this.hexToRgb(unit.color);
+          cl = RepKbClModel.hexToRgb(unit.color);
           this.updateStv(unit.x, unit.y, pdb, ch, 'uni', {r: cl.r, g: cl.g, b: cl.b}, xy.length);
         }
       } else if (event.detail.id[0] === 'i') {
         const xy = JSON.parse(event.detail.dataxy);
         for (const ins of xy) {
-          cl = this.hexToRgb(ins.color);
+          cl = RepKbClModel.hexToRgb(ins.color);
           this.updateSqv(ins.x, ins.y, ins.color, 'ins');
           this.updateStv(ins.x, ins.y, pdb, ch, 'ins', {r: cl.r, g: cl.g, b: cl.b}, xy.length);
         }
@@ -265,7 +244,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   // change colors of selected custom features
   tint(event) {
 
-    if (this.clickedStv.user.length <= 0) {
+    if (this.stv.user.length <= 0) {
       this.error = 'Click on a custom feature to start (green elements)';
       return;
     }
@@ -293,25 +272,25 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       }
     }
     document.getElementById('fv').innerHTML = '';
-    this.featureViewer = new FeatureViewer(this.currentUniprot.sequence, '#fv', RepKBComponent.fvOptions);
+    this.featureViewer = new FeatureViewer(this.currentUniprot.sequence, '#fv', FtModel.fvOptions);
     this.featureViewer.addFeatures(this.featureList);
     this.featureViewer.onRegionSelected(r => this.updateTools(r));
     this.featureViewer.onButtonSelected(r => this.paint(r));
     // tslint:disable-next-line:prefer-for-of
-    for (let i = 0; i < this.clickedStv.user.length; i++) {
-      if (this.clickedStv.user[i].start_residue_number === this.lastSelectCustom.x
-        &&  this.clickedStv.user[i].end_residue_number === this.lastSelectCustom.y) {
+    for (let i = 0; i < this.stv.user.length; i++) {
+      if (this.stv.user[i].start_residue_number === this.lastSelectCustom.x
+        &&  this.stv.user[i].end_residue_number === this.lastSelectCustom.y) {
         switch(event.detail.id) {
           case 'drop-One': {
-            this.clickedStv.user[i].color = this.hexToRgb(FtModel.colorsHex.cOne);
+            this.stv.user[i].color = RepKbClModel.hexToRgb(FtModel.colorsHex.cOne);
             break;
           }
           case 'drop-Two': {
-            this.clickedStv.user[i].color = this.hexToRgb(FtModel.colorsHex.cTwo);
+            this.stv.user[i].color = RepKbClModel.hexToRgb(FtModel.colorsHex.cTwo);
             break;
           }
           case 'drop-Three': {
-            this.clickedStv.user[i].color = this.hexToRgb(FtModel.colorsHex.custom);
+            this.stv.user[i].color = RepKbClModel.hexToRgb(FtModel.colorsHex.custom);
             break;
           }
         }
@@ -319,26 +298,26 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       }
     }
     // tslint:disable-next-line:prefer-for-of
-    for (let i = 0; i < this.clickedSqv.user.length; i++) {
+    for (let i = 0; i < this.sqv.user.length; i++) {
       const reg = this.lastSelectCustom.x + '-' + this.lastSelectCustom.y;
-      if (this.clickedSqv.user[i].reg === reg) {
+      if (this.sqv.user[i].reg === reg) {
         switch(event.detail.id) {
           case 'drop-One': {
-            this.clickedSqv.user[i].cl = FtModel.colorsHex.cOne;
+            this.sqv.user[i].cl = FtModel.colorsHex.cOne;
             break;
           }
           case 'drop-Two': {
-            this.clickedSqv.user[i].cl = FtModel.colorsHex.cTwo;
+            this.sqv.user[i].cl = FtModel.colorsHex.cTwo;
             break;
           }
           case 'drop-Three': {
-            this.clickedSqv.user[i].cl = FtModel.colorsHex.custom;
+            this.sqv.user[i].cl = FtModel.colorsHex.custom;
             break;
           }
         }
       }
     }
-    this.stvComp.deleteColor(this.arrEntry, this.clickedStv);
+    this.stvComp.deleteColor(this.arrEntryStv, this.stv);
     this.updateInput();
   }
 
@@ -472,9 +451,9 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       }
     } else {
       this.multicustom = [];
-      this.clickedStv.user = [];
-      this.stvComp.deleteColor(this.arrEntry, this.clickedStv);
-      this.clickedSqv.user = [];
+      this.stv.user = [];
+      this.stvComp.deleteColor(this.arrEntryStv, this.stv);
+      this.sqv.user = [];
       this.updateInput();
       for (const ft in this.featureList) {
         if (this.featureList[ft].id === FtModel.custom.idUnit ||
@@ -510,27 +489,24 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         }
       }
     }
-    console.log(element)
     // const toUnp = this.data.pdbs[this.pdb].chains[this.chain].unp_to_aut;
 
-    console.log(this.clickedStv.user)
-    for (let i = 0; i < this.clickedStv.user.length; i++) {
-      if (this.clickedStv.user[i].start_residue_number === element.x
-        &&  this.clickedStv.user[i].end_residue_number === element.y) {
-        this.clickedStv.user.splice(i, 1);
-        console.log(i);
+    for (let i = 0; i < this.stv.user.length; i++) {
+      if (this.stv.user[i].start_residue_number === element.x
+        &&  this.stv.user[i].end_residue_number === element.y) {
+        this.stv.user.splice(i, 1);
         i--;
       }
     }
 
-    for (let i = 0; i < this.clickedSqv.user.length; i++) {
+    for (let i = 0; i < this.sqv.user.length; i++) {
       const reg = element.x + '-' + element.y;
-      if (this.clickedSqv.user[i].reg === reg) {
-        this.clickedSqv.user.splice(i, 1);
+      if (this.sqv.user[i].reg === reg) {
+        this.sqv.user.splice(i, 1);
         i--;
       }
     }
-    this.stvComp.deleteColor(this.arrEntry, this.clickedStv);
+    this.stvComp.deleteColor(this.arrEntryStv, this.stv);
     this.updateInput();
   }
 
@@ -625,6 +601,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   }
 
   updateTools(r) {
+
     // preprocess input
     const x = r.detail.selectedRegion.x;
     const y = r.detail.selectedRegion.y;
@@ -634,7 +611,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     let rgb;
 
     const clickedColorHex = r.detail.selectedRegion.color;
-    const clickedColorRgb = this.hexToRgb(clickedColorHex);
+    const clickedColorRgb = RepKbClModel.hexToRgb(clickedColorHex);
 
     let label;
     const xy = -1;
@@ -680,17 +657,11 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     if (this.actualPdb !== undefined ) {
       const actualPdb = this.actualPdb.substring(0, this.actualPdb.length - 1);
       if(actualPdb !== this.pdb) {
-        this.emptyArr();
+        [this.arrEntryStv, this.arrEntrySqv, this.stv, this.sqv] =
+          RepKbClModel.emptyArr(this.arrEntryStv, this.arrEntrySqv, this.stv, this.sqv, true);
       } else if (this.actualPdb !== clickedPdb){
-        this.arrEntry = [];
-        this.clickedStv.chains  = [];
-        this.clickedStv.units = [];
-        this.clickedStv.insertions = [];
-
-        this.arrEntrySqv = [];
-        this.clickedSqv.chains  = [];
-        this.clickedSqv.units = [];
-        this.clickedSqv.insertions = [];
+        [this.arrEntryStv, this.arrEntrySqv, this.stv, this.sqv] =
+          RepKbClModel.emptyArr(this.arrEntryStv, this.arrEntrySqv, this.stv, this.sqv, false);
       }
     }
     this.updateStv(x, y, pdb, ch, identity, rgb, xy);
@@ -699,13 +670,20 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   }
 
   updateStv(st, end, pdb, ch, identity, rgb, xy) {
+    let stvInfo: Stv;
+    stvInfo = {
+      entity_id: '',
+      struct_asym_id: '',
+      start_residue_number: 0,
+      end_residue_number: 0,
+      color: rgb
+    };
 
     if (identity === 'usr') {
       // tslint:disable-next-line:forin
       for (const chain in this.data.pdbs[pdb].chains) {
+
         // coloring structure viewer
-        // TODO to test this conversion: need and example with a pdb with chains of different length (overlapping but not completely)
-        // you can run a script to see if you find them
         let stUnp;
         let endUnp;
         for (let i = st; i <= end; i ++) {
@@ -725,52 +703,54 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
             this.error = 'this feature is not fully visible on the selected pdb structure';
           }
         }
+
         if (stUnp !== undefined && endUnp !== undefined) {
-          this.arrEntry = this.stvComp.updateView(xy, this.arrEntry, this.clickedStv,
+
+          stvInfo.entity_id = this.data.pdbs[pdb].chains[chain].entity_id.toString();
+          stvInfo.struct_asym_id = this.data.pdbs[pdb].chains[chain].struct_asym_id;
+          stvInfo.start_residue_number = stUnp;
+          stvInfo.end_residue_number = endUnp;
+
+          this.arrEntryStv = this.stvComp.updateView(
+            xy,
+            this.arrEntryStv,
+            this.stv,
             pdb.toLowerCase(),
             ch,
             identity, // region or units/insertions
-            {
-              entity_id: this.data.pdbs[pdb].chains[chain].entity_id.toString(),
-              struct_asym_id: this.data.pdbs[pdb].chains[chain].struct_asym_id,
-              start_residue_number: stUnp,
-              end_residue_number: endUnp,
-              color: rgb
-            });
+            stvInfo
+          );
         }
       }
     } else {
       // coloring structure viewer
       // convert from uniprot values to pdb
-
       st = st - this.data.pdbs[pdb].chains[ch].shift;
       end = end - this.data.pdbs[pdb].chains[ch].shift;
-      this.arrEntry = this.stvComp.updateView(xy, this.arrEntry, this.clickedStv,
+      stvInfo.entity_id = this.data.pdbs[pdb].chains[ch].entity_id.toString();
+      stvInfo.struct_asym_id = this.data.pdbs[pdb].chains[ch].struct_asym_id;
+      stvInfo.start_residue_number = st;
+      stvInfo.end_residue_number = end;
+      this.arrEntryStv = this.stvComp.updateView(xy, this.arrEntryStv, this.stv,
         pdb.toLowerCase(),
         ch,
         identity, // region or units/insertions
-        {
-          entity_id: this.data.pdbs[pdb].chains[ch].entity_id.toString(),
-          struct_asym_id: this.data.pdbs[pdb].chains[ch].struct_asym_id,
-          start_residue_number: st,
-          end_residue_number: end,
-          color: rgb
-        });
+        stvInfo
+      );
     }
   }
 
   updateSqv(st, end, identity, cl) {
     const reg = st + '-' + end;
     const obj = {reg, cl};
-
     if (identity === 'ch') {
-      this.insertClickElem(obj, this.clickedSqv.chains);
+      this.insertClickElem(obj, this.sqv.chains);
     } else if (identity === 'uni') {
-      this.insertClickElem(obj, this.clickedSqv.units);
+      this.insertClickElem(obj, this.sqv.units);
     } else if (identity === 'ins') {
-      this.insertClickElem(obj, this.clickedSqv.insertions);
+      this.insertClickElem(obj, this.sqv.insertions);
     } else if (identity === 'usr') {
-      this.insertClickElem(obj, this.clickedSqv.user);
+      this.insertClickElem(obj, this.sqv.user);
     }
 
     this.updateInput();
@@ -824,10 +804,10 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
 
   updateInput() {
     this.arrEntrySqv = [];
-    Array.prototype.push.apply(this.arrEntrySqv, this.clickedSqv.chains);
-    Array.prototype.push.apply(this.arrEntrySqv, this.clickedSqv.units);
-    Array.prototype.push.apply(this.arrEntrySqv, this.clickedSqv.insertions);
-    Array.prototype.push.apply(this.arrEntrySqv, this.clickedSqv.user);
+    Array.prototype.push.apply(this.arrEntrySqv, this.sqv.chains);
+    Array.prototype.push.apply(this.arrEntrySqv, this.sqv.units);
+    Array.prototype.push.apply(this.arrEntrySqv, this.sqv.insertions);
+    Array.prototype.push.apply(this.arrEntrySqv, this.sqv.user);
 
     const colors = {};
 
@@ -848,33 +828,10 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     };
   }
 
-  emptyArr() {
-    this.arrEntry = [];
-    this.clickedStv.chains  = [];
-    this.clickedStv.units = [];
-    this.clickedStv.user = [];
-    this.clickedStv.insertions = [];
-
-    this.arrEntrySqv = [];
-    this.clickedSqv.chains  = [];
-    this.clickedSqv.units = [];
-    this.clickedSqv.insertions = [];
-    this.clickedSqv.user = [];
-  }
-
   eraseAll() {
-    this.emptyArr();
-    this.stvComp.deleteColor(this.arrEntry, this.clickedStv);
+    [this.arrEntryStv, this.arrEntrySqv, this.stv, this.sqv] =
+      RepKbClModel.emptyArr(this.arrEntryStv, this.arrEntrySqv, this.stv, this.sqv, true);
+    this.stvComp.deleteColor(this.arrEntryStv, this.stv);
     this.updateInput();
   }
-
-  hexToRgb(hex) {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-      r: parseInt(result[1], 16),
-      g: parseInt(result[2], 16),
-      b: parseInt(result[3], 16)
-    } : null;
-  }
-
 }

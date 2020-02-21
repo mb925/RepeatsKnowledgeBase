@@ -91,6 +91,7 @@ export class StrucViewComponent implements OnInit {
   }
 
   insertClickElem(obj, arr) {
+    console.log(arr)
 
     let elem;
     let flag = true;
