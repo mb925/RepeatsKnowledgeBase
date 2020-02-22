@@ -31,27 +31,12 @@ export class FtModel {
     idIns: 'custom-insertion'
   };
   static idCustomUnit = 0;
-  static idCustomInsertion = 0;
+  static idCustomIns = 0;
 
   /** Custom entities */
   static buildCus(start: string, end: string, sequenceLength: number, actualPdb: string, feature: string, dtLabel: number) {
     const x = +start;
     const y = +end;
-    if (isNaN(x) || isNaN(y)) {
-      Log.w(1, 'non-numeric field for custom entity.');
-      return undefined;
-    }
-
-    if (x < 1 || y > sequenceLength) {
-      Log.w(1, 'out-of-bounds custom entity.');
-      return undefined;
-    }
-
-    if (x >= y) {
-      Log.w(1, 'entity start is after entity end.');
-      return undefined;
-    }
-    dtLabel += 1;
     return {
       type: 'rect',
       label: actualPdb,
@@ -73,10 +58,10 @@ export class FtModel {
           id: 'drop-Three',
           content: `<i class="fa fa-tint" id="cThree"></i>`
         },
-        // {
-        //   id: 'c-paint',
-        //   content: `<a id="usr"></a>`
-        // }
+        {
+          id: 'c-paint',
+          content: `<i data-id='usr' class='fa fa-paint-brush'></i>`
+        }
 
       ]
     };
@@ -95,7 +80,6 @@ export class FtModel {
       sidebar: [
         {
           id: 'unpLink',
-          tooltip: 'UNIPROT ' + uniprotId,
           content: `<a target="_blank" href="${FtModel.unpUrl}${uniprotId}"><i class="fa fa-link"></i></a>`,
         }
       ]

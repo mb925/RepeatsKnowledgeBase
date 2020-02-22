@@ -8,7 +8,9 @@
 
 ::ng-deep .fa {
   color: #00709b;
+  width: 10px;
 }
+
 ::ng-deep #cOne {
   color: #E36414;
 }

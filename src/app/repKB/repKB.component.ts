@@ -93,7 +93,6 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       }
 
       document.getElementById('fv').innerHTML = '';
-
       this.data = data;
 
       // create json data to download
@@ -334,6 +333,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       if (!flag) {
         this.featureList.unshift(entity)
       }
+
       this.multicustom.push({id: entity.data[0].label, pdb: this.actualPdb,
         x: +this.stUnp, y: +this.endUnp, color: FtModel.colorsHex.custom, feature: this.feature});
     }
@@ -377,14 +377,16 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     let ftIns;
     switch(this.feature) {
       case 'unit': {
+        FtModel.idCustomUnit += 1;
         ftUnit = FtModel.buildCus(this.stUnp, this.endUnp, this.currentUniprot.sequence.length,
           this.actualPdb, FtModel.custom.idUnit, FtModel.idCustomUnit);
         this.addCusEntity(ftUnit, FtModel.custom.idUnit);
         break;
       }
       case 'insertion': {
+        FtModel.idCustomIns += 1;
         ftIns = FtModel.buildCus(this.stUnp, this.endUnp, this.currentUniprot.sequence.length,
-          this.actualPdb, FtModel.custom.idIns, FtModel.idCustomInsertion);
+          this.actualPdb, FtModel.custom.idIns, FtModel.idCustomIns);
         this.addCusEntity(ftIns, FtModel.custom.idIns);
         break;
       }
@@ -403,12 +405,6 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     this.generateMultifasta();
 
     const dt = JSON.stringify(this.multicustom);
-    // if (this.multicustom.length > 1) {
-    //   document.getElementById('usr').innerHTML =
-    //                   `<a id='usr'>
-    //                     <i data-id='usr' data-dt = '${dt}' class='fa fa-paint-brush'></i>
-    //                    </a>`;
-    // }
   }
 
   removeCustom(type: string) {
@@ -438,7 +434,9 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       }
     } else if (type === 'last') {
       const last = this.multicustom.pop();
-
+      if(!last) {
+        return;
+      }
       switch (last.feature) {
         case 'unit':{
           this.removeSelected(last, FtModel.custom.idUnit);
@@ -465,12 +463,6 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     this.featureViewer.emptyFeatures();
     this.featureViewer.addFeatures(this.featureList);
     this.generateMultifasta();
-
-    // if (this.multicustom.length > 1) {
-    //   const dt = JSON.stringify(this.multicustom);
-    //   document.getElementById('usr').innerHTML = `<a id='usr'><i data-id='usr' data-dt = '${dt}' class='fa fa-paint-brush'
-    //    aria-hidden='true'></i></a>`;
-    // }
   }
 
   removeSelected(element, check) {
@@ -479,17 +471,15 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       if (this.featureList[ft].id === check) {
         flag = true;
         for (let i = 0; i < this.featureList[ft].data.length; i++) {
+
           if (this.featureList[ft].data[i].label === element.id) {
             this.featureList[ft].data.splice(i, 1);
-            if (this.featureList[ft].data.length === 0) {
-              this.featureList.splice(i, 1)
-            }
+            i--;
             break;
           }
         }
       }
     }
-    // const toUnp = this.data.pdbs[this.pdb].chains[this.chain].unp_to_aut;
 
     for (let i = 0; i < this.stv.user.length; i++) {
       if (this.stv.user[i].start_residue_number === element.x

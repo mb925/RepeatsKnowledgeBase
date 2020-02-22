@@ -21,6 +21,22 @@
   overflow: hidden;
   padding-bottom: 9rem;
 }
+::ng-deep svg {
+  width: 100%;
+}
+
+::ng-deep svg #tcustom-unit_tagarea_button_drop-One {
+  transform: translate(6px,0);
+}
+::ng-deep svg #tcustom-unit_tagarea_button_drop-Two {
+  transform: translate(20px,0);
+}
+::ng-deep svg #tcustom-unit_tagarea_button_drop-Three {
+  transform: translate(33px,0);
+}
+::ng-deep svg #tcustom-unit_tagarea_button_c-paint {
+  transform: translate(46px,0);
+}
 
 #left {
   width: 50%;
@@ -164,12 +180,13 @@ select {
   width: 10px;
 }
 
-
+#drop {
+  width: 10px;
+}
 
 input {
   padding: 2px 5px;
 }
-
 
 .loader {
   position: absolute;
