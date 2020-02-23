@@ -34,7 +34,11 @@
 ::ng-deep svg #tcustom-unit_tagarea_button_drop-Three {
   transform: translate(33px,0);
 }
-::ng-deep svg #tcustom-unit_tagarea_button_c-paint {
+::ng-deep svg #tcustom-unit_tagarea_button_c-paint-custom-unit {
+  transform: translate(46px,0);
+}
+
+::ng-deep svg #tcustom-unit_tagarea_button_c-paint-custom-ins {
   transform: translate(46px,0);
 }
 

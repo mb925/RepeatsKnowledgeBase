@@ -73,6 +73,8 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   disEndUnp= true;
   stv: Clicked;
   sqv: Clicked;
+  uniqUnit = [];
+  uniqIns = [];
 
   ngOnInit(): void {
     this.sqv = { chains: [], units: [], insertions: [], user: []};
@@ -184,6 +186,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   }
 
   paint(event) {
+    console.log(event)
     if (event.detail.id.includes('drop')){
       this.tint(event);
       return;
@@ -209,16 +212,33 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         }
         flag= true;
       }
-
       ch = this.lastClicked[this.lastClicked.length - 1];
       pdb = this.lastClicked.slice(0, -2);
-      for (const item of xy) {
+      switch(event.detail.id) {
+        case 'c-paint-custom-unit': {
+          // TODO sostituire xy con uniqUnit
+          for (const item of xy) {
+            this.updateSqv(item.x, item.y, 'usr', item.color);
+            cl = RepKbClModel.hexToRgb(item.color);
+            this.updateStv(item.x, item.y, pdb, ch, 'usr', {r: cl.r, g: cl.g, b: cl.b}, xy.length);
+          }
+          break;
+        }
+        case 'c-paint-custom-ins': {
 
+          for (const item of xy) {
+            this.updateSqv(item.x, item.y, 'usr', item.color);
+            cl = RepKbClModel.hexToRgb(item.color);
+            this.updateStv(item.x, item.y, pdb, ch, 'usr', {r: cl.r, g: cl.g, b: cl.b}, xy.length);
+          }
+          break;
+        }
 
-        this.updateSqv(item.x, item.y, 'usr', item.color);
-        cl = RepKbClModel.hexToRgb(item.color);
-        this.updateStv(item.x, item.y, pdb, ch, 'usr', {r: cl.r, g: cl.g, b: cl.b}, xy.length);
       }
+
+
+
+
     } else {
       const name = event.detail.id.substring(2);
       [pdb, ch] = name.split('-');
@@ -378,6 +398,22 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     switch(this.feature) {
       case 'unit': {
         FtModel.idCustomUnit += 1;
+        // TODO identify first row
+        // let flag = true;
+        // if (this.uniqUnit.length === 0) {
+        //   this.uniqUnit.push( {x:this.stUnp, y:this.endUnp} );
+        // } else {
+        //   for (const uniq of this.uniqUnit) {
+        //     if ((this.stUnp < uniq.x && this.endUnp < uniq.x) || (this.stUnp > uniq.y && this.endUnp > uniq.y)) {
+        //     } else {
+        //       flag = false;
+        //       break;
+        //     }
+        //   }
+        //   if (flag) {
+        //     this.uniqUnit.push( {x:this.stUnp, y:this.endUnp} );
+        //   }
+        // }
         ftUnit = FtModel.buildCus(this.stUnp, this.endUnp, this.currentUniprot.sequence.length,
           this.actualPdb, FtModel.custom.idUnit, FtModel.idCustomUnit);
         this.addCusEntity(ftUnit, FtModel.custom.idUnit);
@@ -403,8 +439,6 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         y: ftIns.data[ftIns.data.length - 1].y}, ftIns.id);
     }
     this.generateMultifasta();
-
-    const dt = JSON.stringify(this.multicustom);
   }
 
   removeCustom(type: string) {

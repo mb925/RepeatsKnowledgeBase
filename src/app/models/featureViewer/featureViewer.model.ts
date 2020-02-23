@@ -37,6 +37,7 @@ export class FtModel {
   static buildCus(start: string, end: string, sequenceLength: number, actualPdb: string, feature: string, dtLabel: number) {
     const x = +start;
     const y = +end;
+
     return {
       type: 'rect',
       label: actualPdb,
@@ -59,7 +60,7 @@ export class FtModel {
           content: `<i class="fa fa-tint" id="cThree"></i>`
         },
         {
-          id: 'c-paint',
+          id: 'c-paint-' + feature,
           content: `<i data-id='usr' class='fa fa-paint-brush'></i>`
         }
 
