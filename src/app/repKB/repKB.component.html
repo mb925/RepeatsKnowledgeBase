@@ -31,20 +31,20 @@
               <div class="forms">
                 <div>
                   <label>PDB:</label>
-                  <input placeholder="Start" type="text" [attr.disabled]="disStartPdb" [(ngModel)]="startUsrPdb">
-                  <input placeholder="End" type="text" [attr.disabled]="disEndPdb" [(ngModel)]="endUsrPdb">
+                  <input placeholder="Start" type="text" [attr.disabled]="this.vlPdb.disStartPdb" [(ngModel)]="startUsrPdb">
+                  <input placeholder="End" type="text" [attr.disabled]="this.vlPdb.disEndPdb" [(ngModel)]="endUsrPdb">
                   <i class="fa fa-exchange" aria-hidden="true"></i>
                   <label>UniProt:</label>
-                  <span>[{{stUnp}}]  , [{{endUnp}}]</span>
+                  <span>[{{this.vlUnp.stUnp}}]  , [{{this.vlUnp.endUnp}}]</span>
                 </div>
 
                 <div>
                   <label>UniProt:</label>
-                  <input placeholder="Start" type="text" [attr.disabled]="disStartUnp" [(ngModel)]="startUsrUnp">
-                  <input placeholder="End" type="text" [attr.disabled]="disEndUnp" [(ngModel)]="endUsrUnp">
+                  <input placeholder="Start" type="text" [attr.disabled]="this.vlUnp.disStartUnp" [(ngModel)]="startUsrUnp">
+                  <input placeholder="End" type="text" [attr.disabled]="this.vlUnp.disEndUnp" [(ngModel)]="endUsrUnp">
                   <i class="fa fa-exchange" aria-hidden="true"></i>
                   <label>PDB:</label>
-                  <span> [{{stPdb}}] , [{{endPdb}}]</span>
+                  <span> [{{this.vlPdb.stPdb}}] , [{{this.vlPdb.endPdb}}]</span>
                 </div>
               </div>
               <div class="alert"> {{alert}}</div>

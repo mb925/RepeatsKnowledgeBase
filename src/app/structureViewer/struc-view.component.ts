@@ -26,10 +26,10 @@ export class StrucViewComponent implements OnInit {
   }
 
   async updateView(xy, arr, ck, pdbName, ch, id, obj) {
+    console.log(obj)
 
     RepKbClModel.insElem(id, arr, obj,ck, 'stv', true);
     arr = RepKbClModel.pushArr(arr, ck,true);
-
     // when using paint button, draw the molecule only when the array is filled completely
     if (xy !== -1 && arr.length !== xy) {
       return;

@@ -12,6 +12,7 @@ import {Subject} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
 import {Clicked, Stv} from '../interfaces/repKbColors.interface';
 import {RepKbClModel} from '../models/repKbColors.model';
+import {Identity, ValuesPdb, ValuesUnp} from '../interfaces/repKb.interfaces';
 
 @Component({
   selector: 'app-reupro',
@@ -28,19 +29,25 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     const destroyed = new Subject<any>();
     this.route.params
       .pipe(takeUntil(destroyed), pluck('id'))
-      .subscribe(id => this.uniprotId = id);
+      .subscribe(id => this.unpId = id);
 
     this.dataFetcher = new DataFetcherModel();
     this.dataDownload = new DataDownloadModel(san);
+    this.vlPdb = {disStartPdb: true, disEndPdb: true, stPdb: '-', endPdb: '-'};
+    this.vlUnp = {disStartUnp: true, disEndUnp: true, stUnp: '-', endUnp: '-'};
   }
 
   @Input() event: Event;
-  uniprotId: string;
-  currentUniprot: UniprotInfo;
+  unpId: string;
+  currUnp: UniprotInfo;
   featureList: Array<any>;
   dataFetcher: DataFetcherModel;
   dataDownload: DataDownloadModel;
   featureViewer: FeatureViewer;
+  idt : Identity;
+  vlPdb: ValuesPdb;
+  vlUnp: ValuesUnp;
+  stv: Clicked; sqv: Clicked;
   fileJson;
   multifasta;
   multicustom = [];
@@ -49,10 +56,6 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   endUsrPdb;
   startUsrUnp;
   endUsrUnp;
-  stUnp = '-';
-  endUnp = '-';
-  stPdb = '-';
-  endPdb = '-';
   data;
   pdb;
   chain;
@@ -64,58 +67,45 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   arrEntryStv;
   arrEntrySqv;
   actualPdb;
-  actualUniprot;
   alert = 'Click on a pdb to start';
   error = '';
-  disStartPdb= true;
-  disEndPdb= true;
-  disStartUnp= true;
-  disEndUnp= true;
-  stv: Clicked;
-  sqv: Clicked;
-  uniqUnit = [];
-  uniqIns = [];
 
   ngOnInit(): void {
     this.sqv = { chains: [], units: [], insertions: [], user: []};
     this.stv = { chains: [], units: [], insertions: [], user: []};
+    this.idt = { chains: 'ch', units: 'uni', insertions: 'ins', user: 'usr'};
     this.featureList = [];
     this.arrEntryStv = [];
-    this.updateView(this.uniprotId.toUpperCase());
+    this.updateView(this.unpId.toUpperCase());
   }
 
   public updateView(id) {
-    this.uniprotId = id;
-    this.actualUniprot = id;
+    this.unpId = id;
 
-    this.dataFetcher.getData(this.uniprotId).then((data: DataFetcher) => {
+    this.dataFetcher.getData(this.unpId).then((data: DataFetcher) => {
 
       if (!data) {
         return;
       }
-
-      document.getElementById('fv').innerHTML = '';
       this.data = data;
-
-      // create json data to download
-      this.fileJson = this.dataDownload.getJson(data, this.uniprotId);
+      this.currUnp = data.uniprots[this.unpId];
 
       // new Feature Viewer
-      this.currentUniprot = data.uniprots[this.uniprotId];
+      document.getElementById('fv').innerHTML = '';
       delete this.featureViewer;
-      this.featureViewer = new FeatureViewer(this.currentUniprot.sequence, '#fv', FtModel.fvOptions);
+      this.featureViewer = new FeatureViewer(this.currUnp.sequence, '#fv', FtModel.fvOptions);
 
       // fill Feature Viewer
       const featureList = [];
-      featureList.push(FtModel.buildUnpFt(this.uniprotId, this.currentUniprot.sequence.length));
+      featureList.push(FtModel.buildUnpFt(this.unpId, this.currUnp.sequence.length));
 
       let chFeature;
       let pdbInfo: PdbInfo;
       let chainInfo: ChainInfo;
       // tslint:disable-next-line:forin
-      for (const pdb in this.currentUniprot.pdbs) {
+      for (const pdb in this.currUnp.pdbs) {
         pdbInfo = data.pdbs[pdb];
-        for (const chain of this.currentUniprot.pdbs[pdb].sort()) {
+        for (const chain of this.currUnp.pdbs[pdb].sort()) {
           chainInfo = pdbInfo.chains[chain];
           chFeature = FtModel.buildChFt(pdb, chainInfo);
           let subFt;
@@ -149,15 +139,14 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
 
       this.featureList = featureList;
       this.featureViewer.addFeatures(featureList);
-      document.getElementsByClassName('loader')[0].className = '';
-      document.getElementsByClassName('loaderMsg')[0].innerHTML = '';
       this.featureViewer.onRegionSelected(r => this.updateTools(r));
       this.featureViewer.onButtonSelected(r => this.paint(r));
-
+      document.getElementsByClassName('loader')[0].className = '';
+      document.getElementsByClassName('loaderMsg')[0].innerHTML = '';
 
       this.input = {
         rows: {
-          1: {data: this.currentUniprot.sequence}
+          1: {data: this.currUnp.sequence}
         },
         colors: {},
         parameters: {
@@ -166,6 +155,9 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
           log: 'debug'
         }
       };
+
+      // create json data to download
+      this.fileJson = this.dataDownload.getJson(data, this.unpId);
     });
 
   }
@@ -178,7 +170,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     for (const e of this.multicustom) {
       let sq = '';
       for (let i = e.x - 1; i <= e.y - 1; i++) {
-        sq += this.currentUniprot.sequence[i];
+        sq += this.currUnp.sequence[i];
       }
       multifasta += '>' + this.feature.toUpperCase() + ' ' + e.x + '-' + e.y + '\n' + sq + '\n';
     }
@@ -186,7 +178,6 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   }
 
   paint(event) {
-    console.log(event)
     if (event.detail.id.includes('drop')){
       this.tint(event);
       return;
@@ -194,7 +185,6 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
 
     let pdb;
     let ch;
-    let cl;
     this.stv.user = [];
     this.sqv.user = [];
     this.eraseAll();
@@ -214,49 +204,28 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       }
       ch = this.lastClicked[this.lastClicked.length - 1];
       pdb = this.lastClicked.slice(0, -2);
-      switch(event.detail.id) {
-        case 'c-paint-custom-unit': {
+      if (event.detail.id === 'c-paint-custom-unit' || event.detail.id ==='c-paint-custom-ins') {
           // TODO sostituire xy con uniqUnit
-          for (const item of xy) {
-            this.updateSqv(item.x, item.y, 'usr', item.color);
-            cl = RepKbClModel.hexToRgb(item.color);
-            this.updateStv(item.x, item.y, pdb, ch, 'usr', {r: cl.r, g: cl.g, b: cl.b}, xy.length);
-          }
-          break;
-        }
-        case 'c-paint-custom-ins': {
-
-          for (const item of xy) {
-            this.updateSqv(item.x, item.y, 'usr', item.color);
-            cl = RepKbClModel.hexToRgb(item.color);
-            this.updateStv(item.x, item.y, pdb, ch, 'usr', {r: cl.r, g: cl.g, b: cl.b}, xy.length);
-          }
-          break;
-        }
-
+          this.updateEntity(xy, pdb, ch, this.idt.user);
       }
-
-
-
-
     } else {
       const name = event.detail.id.substring(2);
       [pdb, ch] = name.split('-');
       if (event.detail.id[0] === 'u' ) {
         const xy = JSON.parse(event.detail.dataxy);
-        for (const unit of xy) {
-          this.updateSqv(unit.x, unit.y, 'uni', unit.color);
-          cl = RepKbClModel.hexToRgb(unit.color);
-          this.updateStv(unit.x, unit.y, pdb, ch, 'uni', {r: cl.r, g: cl.g, b: cl.b}, xy.length);
-        }
+        this.updateEntity(xy, pdb, ch, this.idt.units);
       } else if (event.detail.id[0] === 'i') {
         const xy = JSON.parse(event.detail.dataxy);
-        for (const ins of xy) {
-          cl = RepKbClModel.hexToRgb(ins.color);
-          this.updateSqv(ins.x, ins.y, 'ins', ins.color);
-          this.updateStv(ins.x, ins.y, pdb, ch, 'ins', {r: cl.r, g: cl.g, b: cl.b}, xy.length);
-        }
+        this.updateEntity(xy, pdb, ch, this.idt.insertions);
       }
+    }
+  }
+
+  updateEntity(xy, pdb, ch, idt){
+    for (const entity of xy) {
+      const cl = RepKbClModel.hexToRgb(entity.color);
+      this.updateSqv(entity.x, entity.y, idt, entity.color);
+      this.updateStv(entity.x, entity.y, pdb, ch, idt, {r: cl.r, g: cl.g, b: cl.b}, xy.length);
     }
   }
 
@@ -274,15 +243,15 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         && this.featureList[0].data[i].x === this.lastSelectCustom.x
         && this.featureList[0].data[i].y === this.lastSelectCustom.y) {
         switch(event.detail.id) {
-          case 'drop-One': {
+          case FtModel.drop.one: {
             this.featureList[0].data[i].color = FtModel.colorsHex.cOne;
             break;
           }
-          case 'drop-Two': {
+          case FtModel.drop.two: {
             this.featureList[0].data[i].color = FtModel.colorsHex.cTwo;
             break;
           }
-          case 'drop-Three': {
+          case FtModel.drop.three: {
             this.featureList[0].data[i].color = FtModel.colorsHex.custom;
             break;
           }
@@ -291,7 +260,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       }
     }
     document.getElementById('fv').innerHTML = '';
-    this.featureViewer = new FeatureViewer(this.currentUniprot.sequence, '#fv', FtModel.fvOptions);
+    this.featureViewer = new FeatureViewer(this.currUnp.sequence, '#fv', FtModel.fvOptions);
     this.featureViewer.addFeatures(this.featureList);
     this.featureViewer.onRegionSelected(r => this.updateTools(r));
     this.featureViewer.onButtonSelected(r => this.paint(r));
@@ -300,15 +269,15 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       if (this.stv.user[i].start_residue_number === this.lastSelectCustom.x
         &&  this.stv.user[i].end_residue_number === this.lastSelectCustom.y) {
         switch(event.detail.id) {
-          case 'drop-One': {
+          case FtModel.drop.one: {
             this.stv.user[i].color = RepKbClModel.hexToRgb(FtModel.colorsHex.cOne);
             break;
           }
-          case 'drop-Two': {
+          case FtModel.drop.two: {
             this.stv.user[i].color = RepKbClModel.hexToRgb(FtModel.colorsHex.cTwo);
             break;
           }
-          case 'drop-Three': {
+          case FtModel.drop.three: {
             this.stv.user[i].color = RepKbClModel.hexToRgb(FtModel.colorsHex.custom);
             break;
           }
@@ -321,15 +290,15 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       const reg = this.lastSelectCustom.x + '-' + this.lastSelectCustom.y;
       if (this.sqv.user[i].reg === reg) {
         switch(event.detail.id) {
-          case 'drop-One': {
+          case FtModel.drop.one: {
             this.sqv.user[i].cl = FtModel.colorsHex.cOne;
             break;
           }
-          case 'drop-Two': {
+          case FtModel.drop.two: {
             this.sqv.user[i].cl = FtModel.colorsHex.cTwo;
             break;
           }
-          case 'drop-Three': {
+          case FtModel.drop.three: {
             this.sqv.user[i].cl = FtModel.colorsHex.custom;
             break;
           }
@@ -355,7 +324,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       }
 
       this.multicustom.push({id: entity.data[0].label, pdb: this.actualPdb,
-        x: +this.stUnp, y: +this.endUnp, color: FtModel.colorsHex.custom, feature: this.feature});
+        x: +this.vlUnp.stUnp, y: +this.vlUnp.endUnp, color: FtModel.colorsHex.custom, feature: this.feature});
     }
   }
   addCustom() {
@@ -368,27 +337,26 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     }
 
     if (this.feature === undefined) {
-      this.error = 'Invalid action. Please select a feature.'
+      this.error = 'Invalid action. Please select a feature.';
+      return;
+    }
+    if (this.vlPdb.disStartPdb === null && (this.vlUnp.stUnp === '-' || this.vlUnp.endUnp === '-')) {
+      this.error = e;
+      return;
+    } else if (this.vlUnp.disStartUnp === null && (this.startUsrUnp === undefined || this.endUsrUnp === undefined)) {
+      this.error = e;
       return;
     }
 
-    if (this.disStartPdb === null && (this.stUnp === '-' || this.endUnp === '-')) {
-      this.error = e;
-      return;
-    } else if (this.disStartUnp === null && (this.startUsrUnp === undefined || this.endUsrUnp === undefined)) {
-      this.error = e;
-      return;
+    if (this.vlPdb.disStartPdb) {
+      this.vlUnp.stUnp = this.startUsrUnp;
+      this.vlUnp.endUnp = this.endUsrUnp;
     }
 
-    if (this.disStartPdb) {
-      this.stUnp = this.startUsrUnp;
-      this.endUnp = this.endUsrUnp;
-    }
-
-    if (this.stUnp === '-' || this.endUnp === '-' || +this.stUnp > +this.endUnp) {
+    if (this.vlUnp.stUnp === '-' || this.vlUnp.endUnp === '-' || +this.vlUnp.stUnp > +this.vlUnp.endUnp) {
       this.error = e;
       return;
-    } else if (+this.stUnp === +this.endUnp) {
+    } else if (+this.vlUnp.stUnp === +this.vlUnp.endUnp) {
       this.error = 'Feature is too short to be showed.';
       return;
     }
@@ -396,7 +364,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     let ftUnit;
     let ftIns;
     switch(this.feature) {
-      case 'unit': {
+      case FtModel.feature.unit: {
         FtModel.idCustomUnit += 1;
         // TODO identify first row
         // let flag = true;
@@ -414,15 +382,13 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         //     this.uniqUnit.push( {x:this.stUnp, y:this.endUnp} );
         //   }
         // }
-        ftUnit = FtModel.buildCus(this.stUnp, this.endUnp, this.currentUniprot.sequence.length,
-          this.actualPdb, FtModel.custom.idUnit, FtModel.idCustomUnit);
+        ftUnit = FtModel.buildCus(this.vlUnp.stUnp, this.vlUnp.endUnp, this.actualPdb, FtModel.custom.idUnit, FtModel.idCustomUnit);
         this.addCusEntity(ftUnit, FtModel.custom.idUnit);
         break;
       }
-      case 'insertion': {
+      case FtModel.feature.insertion: {
         FtModel.idCustomIns += 1;
-        ftIns = FtModel.buildCus(this.stUnp, this.endUnp, this.currentUniprot.sequence.length,
-          this.actualPdb, FtModel.custom.idIns, FtModel.idCustomIns);
+        ftIns = FtModel.buildCus(this.vlUnp.stUnp, this.vlUnp.endUnp, this.actualPdb, FtModel.custom.idIns, FtModel.idCustomIns);
         this.addCusEntity(ftIns, FtModel.custom.idIns);
         break;
       }
@@ -457,11 +423,11 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       }
 
       switch (this.lastSelectCustom.feature) {
-        case 'custom-unit':{
+        case FtModel.custom.idUnit:{
           this.removeSelected(this.lastSelectCustom, FtModel.custom.idUnit);
           break;
         }
-        case 'custom-insertion':{
+        case FtModel.custom.idIns:{
           this.removeSelected(this.lastSelectCustom, FtModel.custom.idIns);
           break;
         }
@@ -472,11 +438,11 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         return;
       }
       switch (last.feature) {
-        case 'unit':{
+        case FtModel.feature.unit:{
           this.removeSelected(last, FtModel.custom.idUnit);
           break;
         }
-        case 'insertion':{
+        case FtModel.feature.insertion:{
           this.removeSelected(last, FtModel.custom.idIns);
           break;
         }
@@ -537,90 +503,63 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   // real time user values conversion
   ngAfterViewChecked(): void {
 
-    if (this.event !== undefined && this.actualUniprot !== this.event.toString()) {
+    if (this.event !== undefined && this.unpId !== this.event.toString()) {
       this.updateView(this.event);
     }
 
-
     // PDB TO UNIPROT
     if (this.pdb !== undefined && this.data.pdbs[this.pdb] !== undefined) {
+      const conv = this.data.pdbs[this.pdb].chains[this.chain].aut_to_unp;
 
       this.alert = '';
-      this.disStartPdb = null;
-      this.disEndPdb = null;
-      this.disStartUnp = null;
-      this.disEndUnp = null;
+      this.vlPdb.disStartPdb = null; this.vlPdb.disEndPdb = null; this.vlUnp.disStartUnp = null; this.vlUnp.disEndUnp = null;
 
       if(this.startUsrPdb || this.endUsrPdb) {
-        this.disStartUnp = true;
-        this.disEndUnp = true;
+        this.vlUnp.disStartUnp = true;
+        this.vlUnp.disEndUnp = true;
       } else if (this.startUsrUnp || this.endUsrUnp) {
-        this.disStartPdb = true;
-        this.disEndPdb = true;
+        this.vlPdb.disStartPdb = true;
+        this.vlPdb.disEndPdb = true;
       }
+      this.vlUnp.stUnp = this.assignVal(this.startUsrPdb, conv, this.vlUnp.stUnp);
+      this.cdRef.detectChanges();
+      this.vlUnp.endUnp = this.assignVal(this.endUsrPdb, conv, this.vlUnp.endUnp);
+      this.cdRef.detectChanges();
 
-      const toUnp = this.data.pdbs[this.pdb].chains[this.chain].aut_to_unp;
-
-      if (this.startUsrPdb in toUnp) {
-        this.stUnp = toUnp[this.startUsrPdb];
-        if (this.stUnp[0] === 'u') {
-          this.stUnp = ' - ';
-        }
-        this.cdRef.detectChanges();
-      } else {
-        // user input outside convObj
-        this.stUnp =  '-';
-        this.cdRef.detectChanges();
-      }
-      if (this.endUsrPdb in toUnp) {
-        this.endUnp = toUnp[this.endUsrPdb];
-        if (this.endUnp[0] === 'u') {
-          this.endUnp =  '-';
-        }
-        this.cdRef.detectChanges();
-      } else {
-        // user input outside convObj
-        this.endUnp =  '-';
-        this.cdRef.detectChanges();
-      }
     } else {
       // no user input
-      this.stUnp =  '-';
-      this.endUnp =  '-';
+      this.vlUnp.stUnp =  '-';
+      this.vlUnp.endUnp =  '-';
     }
 
     // UNIPROT TO PDB
     if (this.pdb !== undefined && this.data.pdbs[this.pdb] !== undefined) {
-      const toPdb = this.data.pdbs[this.pdb].chains[this.chain].unp_to_aut;
+      const conv = this.data.pdbs[this.pdb].chains[this.chain].unp_to_aut;
+
+      this.vlPdb.stPdb = this.assignVal(this.startUsrUnp, conv, this.vlPdb.stPdb);
+      this.cdRef.detectChanges();
+      this.vlPdb.endPdb = this.assignVal(this.endUsrUnp, conv, this.vlPdb.endPdb);
+      this.cdRef.detectChanges();
 
 
-      if (this.startUsrUnp in toPdb) {
-        this.stPdb = toPdb[this.startUsrUnp];
-        if (this.stPdb[0] === 'u') {
-          this.stPdb =  '-';
-        }
-        this.cdRef.detectChanges();
-      } else {
-        // user input outside convObj
-        this.stPdb =  '-';
-        this.cdRef.detectChanges();
-      }
-      if (this.endUsrUnp in toPdb) {
-        this.endPdb = toPdb[this.endUsrUnp];
-        if (this.endPdb[0] === 'u') {
-          this.endPdb =  '-';
-        }
-        this.cdRef.detectChanges();
-      } else {
-        // user input outside convObj
-        this.endPdb =  '-';
-        this.cdRef.detectChanges();
-      }
     } else {
       // no user input
-      this.stPdb =  '-';
-      this.endPdb =  '-';
+      this.vlPdb.stPdb =  '-';
+      this.vlPdb.endPdb =  '-';
     }
+  }
+
+  assignVal(prevVal, arr, val) {
+    if (prevVal in arr) {
+      val = arr[prevVal];
+      if (val[0] === 'u') {
+        val =  '-';
+      }
+    } else {
+      // user input outside convObj
+      val =  '-';
+    }
+    return val;
   }
 
   updateTools(r) {
@@ -656,17 +595,17 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
 
     if (label[0] === 'u') {
       label = label.substring(2);
-      identity = 'uni';
+      identity = this.idt.units;
     } else if (label[0] === 'i') {
       label = label.substring(2);
-      identity = 'ins'; // yellow
+      identity = this.idt.insertions;
 
     } else if (label[0] === 'c') {
       label = label.substring(2);
-      identity = 'usr'; // green
+      identity = this.idt.user;
 
     } else {
-      identity = 'ch';
+      identity = this.idt.chains;
     }
     rgb = {r: clickedColorRgb.r, g: clickedColorRgb.g, b: clickedColorRgb.b};
 
@@ -686,25 +625,26 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
           RepKbClModel.emptyArr(this.arrEntryStv, this.arrEntrySqv, this.stv, this.sqv, false);
       }
     }
+
     this.updateStv(x, y, pdb, ch, identity, rgb, xy);
     this.updateSqv(x, y, identity, clickedColorHex);
     this.actualPdb = clickedPdb;
   }
 
   updateStv(st, end, pdb, ch, identity, rgb, xy) {
-    console.log(pdb)
-    console.log(ch)
     const chains = this.data.pdbs[pdb].chains;
-    if (identity === 'usr') {
+    console.log(chains[ch])
+
+    if (identity === this.idt.user) {
       // tslint:disable-next-line:forin
       for (const chain in this.data.pdbs[pdb].chains) {
-        let stAut;
-        let endAut;
+        let stUnp;
+        let endUnp;
 
         // coloring structure viewer
         for (let i = st; i <= end; i ++) {
           if (i in chains[chain].unp_to_aut && chains[chain].unp_to_aut[i] !== '-') {
-            stAut = chains[chain].unp_to_aut[i];
+            stUnp = st;
             break;
           } else {
             this.error = 'this feature is not fully visible on the selected pdb structure';
@@ -712,15 +652,17 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         }
         for (let i = end; i >= st; i --) {
           if (end in chains[chain].unp_to_aut && chains[chain].unp_to_aut[i] !== '-') {
-            endAut = chains[chain].unp_to_aut[i];
+            endUnp = end;
             break;
           } else {
             this.error = 'this feature is not fully visible on the selected pdb structure';
           }
         }
-
-        if (stAut !== undefined && endAut !== undefined) {
-          const stvInfo = RepKbClModel.createStvInfo(rgb, chains, chain, stAut, endAut);
+        if (stUnp !== undefined && endUnp !== undefined) {
+          // litemol uses residue numbers to color, but displays author residue
+          stUnp = stUnp - this.data.pdbs[pdb].chains[ch].shift;
+          endUnp = endUnp - this.data.pdbs[pdb].chains[ch].shift;
+          const stvInfo = RepKbClModel.createStvInfo(rgb, chains, chain, stUnp, endUnp);
           this.arrEntryStv = this.stvComp.updateView(xy, this.arrEntryStv, this.stv,
             pdb.toLowerCase(),
             ch,
@@ -734,6 +676,12 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       // convert from uniprot values to pdb
       st = st - this.data.pdbs[pdb].chains[ch].shift;
       end = end - this.data.pdbs[pdb].chains[ch].shift;
+      // TODO correcting ebi wrong data for uniprot Q13835
+      //  better would be to check data during retrival and try to correct them there
+      if (pdb === '1xm9') {
+        end = 457;
+      }
+
       const stvInfo = RepKbClModel.createStvInfo(rgb, chains, ch, st, end);
       this.arrEntryStv = this.stvComp.updateView(xy, this.arrEntryStv, this.stv,
         pdb.toLowerCase(),
@@ -760,7 +708,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     if (selected === 'clustal') {
       this.input = {
         rows: {
-          1: {data: this.currentUniprot.sequence}
+          1: {data: this.currUnp.sequence}
         },
         colors: {
           '@amino@': [
@@ -787,7 +735,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
 
     this.input = {
       rows: {
-        1: {data: this.currentUniprot.sequence}
+        1: {data: this.currUnp.sequence}
       },
       colors,
       parameters: {

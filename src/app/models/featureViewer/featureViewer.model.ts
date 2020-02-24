@@ -32,9 +32,19 @@ export class FtModel {
   };
   static idCustomUnit = 0;
   static idCustomIns = 0;
+  static feature = {
+    unit: 'unit',
+    insertion: 'insertion'
+  };
+
+  static drop = {
+    one: 'drop-One',
+    two: 'drop-Two',
+    three: 'drop-Three'
+  };
 
   /** Custom entities */
-  static buildCus(start: string, end: string, sequenceLength: number, actualPdb: string, feature: string, dtLabel: number) {
+  static buildCus(start: string, end: string, actualPdb: string, feature: string, dtLabel: number) {
     const x = +start;
     const y = +end;
 
@@ -46,17 +56,17 @@ export class FtModel {
       isOpen: true,
       sidebar: [
         {
-          id: `drop-One`,
+          id: this.drop.one,
           tooltip: actualPdb,
           content: `<i class="fa fa-tint" id="cOne"></i>`,
         },
         {
-          id: 'drop-Two',
+          id: this.drop.two,
           content: `<i class="fa fa-tint" id="cTwo"></i>`
 
         },
         {
-          id: 'drop-Three',
+          id: this.drop.three,
           content: `<i class="fa fa-tint" id="cThree"></i>`
         },
         {
@@ -135,11 +145,11 @@ export class FtModel {
     }
 
     if (convUnits.length > 0) {
-      result.push(FtModel.buildEntityFt('units', pdb, chainInfo.chain_id, convUnits));
+      result.push(FtModel.buildEntityFt(FtModel.feature.unit, pdb, chainInfo.chain_id, convUnits));
     }
 
     if (convIns.length > 0) {
-      result.push(FtModel.buildEntityFt('insertions', pdb, chainInfo.chain_id, convIns));
+      result.push(FtModel.buildEntityFt(FtModel.feature.insertion, pdb, chainInfo.chain_id, convIns));
     }
     return [result, flagAdditional];
 
@@ -148,65 +158,63 @@ export class FtModel {
   private static buildEntityFt(
     feature: string, pdb: string, chain: string, data: Array<{x: number, y: number, color: string}>) {
 
-    let label = `u-${pdb}-${chain}`;
+    let label;
+    switch (feature) {
+      case this.feature.unit: {
+        label = `u-${pdb}-${chain}`;
+        let flag = true;
+        if (data.length > 1) {
 
-    // insertions
-    if (feature !== 'units' && data.length > 0) {
-      for (const elem of data) {
-        elem.color = this.colorsHex.insertions;
-      }
-      label = `i-${pdb}-${chain}`;
-    }
-    let flag = true;
-    // units
-    if (feature === 'units' && data.length > 1) {
-
-      for (const elem of data) {
-        if (flag) {
-          elem.color = this.colorsHex.unitsDark;
-          flag = !flag;
-          continue;
+          for (const elem of data) {
+            if (flag) {
+              elem.color = this.colorsHex.unitsDark;
+              flag = !flag;
+              continue;
+            }
+            elem.color = this.colorsHex.unitsLight;
+            flag = !flag;
+          }
         }
-        elem.color = this.colorsHex.unitsLight;
-        flag = !flag;
+        break;
       }
-      const dt = JSON.stringify(data);
-      return {
-        type: 'rect',
-        id: label,
-        data,
-        isOpen: true,
-        sidebar: [
-          {
-            id: `rpLink-${pdb}-${chain}`,
-            tooltip: `RpsDb ${pdb}-${chain}`,
-            content: `<a target="_blank" href="${FtModel.pdbUrl}${pdb}${chain}">
-                    <i class="fa fa-external-link"></i></a>`
-          },
-          {
-            id: `${label}`,
-            tooltip: `paint`,
-            dataxy: `${dt}`,
-            content: `<a><i class="fa fa-paint-brush"></i></a>`
-          }
-        ]
-      };
-    } else { // if I have a single element I don't need the paint brush
-      return {
-        type: 'rect',
-        id: label,
-        data,
-        isOpen: true,
-        sidebar: [
-          {
-            id: `rpLink-${pdb}-${chain}`,
-            tooltip: `RpsDb ${pdb}-${chain}`,
-            content: `<a target="_blank" href="${FtModel.pdbUrl}${pdb}${chain}">
-                    <i class="fa fa-external-link" aria-hidden="true"></i></a>` // RepeatsDb
-          }
-        ]
-      };
+      case this.feature.insertion: {
+        label = `i-${pdb}-${chain}`;
+        for (const elem of data) {
+          elem.color = this.colorsHex.insertions;
+        }
+        break;
+      }
     }
+    const dt = JSON.stringify(data);
+    let paint = { id: `none`,
+      tooltip: ``,
+      dataxy: ``,
+      content: `<a></a>`};
+
+    if(data.length > 1){
+      paint = {
+        id: `${label}`,
+        tooltip: `paint`,
+        dataxy: `${dt}`,
+        content: `<a><i class="fa fa-paint-brush"></i></a>`
+      }
+    }
+    return {
+      type: 'rect',
+      id: label,
+      data,
+      isOpen: true,
+      sidebar: [
+        {
+          id: `rpLink-${pdb}-${chain}`,
+          tooltip: `RpsDb ${pdb}-${chain}`,
+          content: `<a target="_blank" href="${FtModel.pdbUrl}${pdb}${chain}">
+                    <i class="fa fa-external-link"></i></a>`
+        },
+        paint
+      ]
+    };
+
   }
 
   public static convertEntities(entities: Array<Entity>, convObj) {
