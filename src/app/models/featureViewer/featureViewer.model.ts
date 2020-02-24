@@ -40,7 +40,7 @@ export class FtModel {
 
     return {
       type: 'rect',
-      label: actualPdb,
+      label: feature,
       id: feature,
       data: [{x, y, color: this.colorsHex.custom, label: dtLabel}],
       isOpen: true,

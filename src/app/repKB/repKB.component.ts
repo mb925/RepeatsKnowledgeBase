@@ -653,6 +653,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       label = r.detail.label;
       this.lastClicked = label;
     }
+
     if (label[0] === 'u') {
       label = label.substring(2);
       identity = 'uni';
@@ -691,7 +692,8 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   }
 
   updateStv(st, end, pdb, ch, identity, rgb, xy) {
-
+    console.log(pdb)
+    console.log(ch)
     const chains = this.data.pdbs[pdb].chains;
     if (identity === 'usr') {
       // tslint:disable-next-line:forin
@@ -701,7 +703,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
 
         // coloring structure viewer
         for (let i = st; i <= end; i ++) {
-          if (i in chains[chain].unp_to_aut) {
+          if (i in chains[chain].unp_to_aut && chains[chain].unp_to_aut[i] !== '-') {
             stAut = chains[chain].unp_to_aut[i];
             break;
           } else {
@@ -709,7 +711,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
           }
         }
         for (let i = end; i >= st; i --) {
-          if (end in chains[chain].unp_to_aut) {
+          if (end in chains[chain].unp_to_aut && chains[chain].unp_to_aut[i] !== '-') {
             endAut = chains[chain].unp_to_aut[i];
             break;
           } else {
