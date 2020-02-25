@@ -36,7 +36,6 @@ export class StrucViewService {
   }
 
   public colorSeq(entr) {
-    console.log(entr)
     if (this.ltplugin === undefined) {
       return;
     }

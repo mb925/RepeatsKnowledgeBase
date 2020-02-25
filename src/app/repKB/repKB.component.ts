@@ -69,6 +69,10 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   actualPdb;
   alert = 'Click on a pdb to start';
   error = '';
+  unitsCus = [];
+  insCus = [];
+  lastPaintUnit = 'visible';
+  lastPaintIns = 'visible';
 
   ngOnInit(): void {
     this.sqv = { chains: [], units: [], insertions: [], user: []};
@@ -204,10 +208,14 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       }
       ch = this.lastClicked[this.lastClicked.length - 1];
       pdb = this.lastClicked.slice(0, -2);
-      if (event.detail.id === 'c-paint-custom-unit' || event.detail.id ==='c-paint-custom-ins') {
-          // TODO sostituire xy con uniqUnit
-          this.updateEntity(xy, pdb, ch, this.idt.user);
-      }
+      // TODO paint unit
+      // xy should be from featureList insertions
+      // this.updateEntity(xy, pdb, ch, this.idt.insertions);
+      // TODO or paint insertion
+      // xy should be from featureList insertions
+      // this.updateEntity(xy, pdb, ch, this.idt.insertions);
+
+
     } else {
       const name = event.detail.id.substring(2);
       [pdb, ch] = name.split('-');
@@ -360,62 +368,123 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       this.error = 'Feature is too short to be showed.';
       return;
     }
-
-    let ftUnit;
-    let ftIns;
     switch(this.feature) {
-      case FtModel.feature.unit: {
+      case FtModel.custom.idUnit: {
         FtModel.idCustomUnit += 1;
-        // TODO identify first row
-        // let flag = true;
-        // if (this.uniqUnit.length === 0) {
-        //   this.uniqUnit.push( {x:this.stUnp, y:this.endUnp} );
-        // } else {
-        //   for (const uniq of this.uniqUnit) {
-        //     if ((this.stUnp < uniq.x && this.endUnp < uniq.x) || (this.stUnp > uniq.y && this.endUnp > uniq.y)) {
-        //     } else {
-        //       flag = false;
-        //       break;
-        //     }
-        //   }
-        //   if (flag) {
-        //     this.uniqUnit.push( {x:this.stUnp, y:this.endUnp} );
-        //   }
-        // }
-        ftUnit = FtModel.buildCus(this.vlUnp.stUnp, this.vlUnp.endUnp, this.actualPdb, FtModel.custom.idUnit, FtModel.idCustomUnit);
-        this.addCusEntity(ftUnit, FtModel.custom.idUnit);
+        this.unitsCus.push({x:+this.vlUnp.stUnp, y:+this.vlUnp.endUnp, id: FtModel.idCustomUnit});
+        this.insertCustom(FtModel.idCustomUnit, FtModel.custom.idUnit);
+        this.hideBrush(this.vlUnp.stUnp, this.vlUnp.endUnp, this.unitsCus, FtModel.paint.unit);
         break;
       }
-      case FtModel.feature.insertion: {
+      case FtModel.custom.idIns: {
         FtModel.idCustomIns += 1;
-        ftIns = FtModel.buildCus(this.vlUnp.stUnp, this.vlUnp.endUnp, this.actualPdb, FtModel.custom.idIns, FtModel.idCustomIns);
-        this.addCusEntity(ftIns, FtModel.custom.idIns);
+        this.insCus.push({x:+this.vlUnp.stUnp, y:+this.vlUnp.endUnp, id: FtModel.idCustomIns});
+        this.insertCustom(FtModel.idCustomIns, FtModel.custom.idIns);
+        this.hideBrush(this.vlUnp.stUnp, this.vlUnp.endUnp, this.insCus, FtModel.paint.ins);
         break;
       }
     }
 
-    this.featureViewer.emptyFeatures();
-    this.featureViewer.addFeatures(this.featureList);
-    if (ftUnit && ftUnit.data.length > 0) {
-      this.featureViewer.highlightRegion({x: ftUnit.data[ftUnit.data.length - 1].x,
-        y: ftUnit.data[ftUnit.data.length - 1].y}, ftUnit.id);
+    if (this.unitsCus.length <= 1) {
+      if (document.getElementById(FtModel.paint.unit)) {
+        document.getElementById(FtModel.paint.unit).style.visibility = 'hidden';
+      }
     }
-    if (ftIns && ftIns.data.length > 0) {
-      this.featureViewer.highlightRegion({x: ftIns.data[ftIns.data.length - 1].x,
-        y: ftIns.data[ftIns.data.length - 1].y}, ftIns.id);
+    if (this.insCus.length <= 1) {
+      if (document.getElementById(FtModel.paint.ins)) {
+        document.getElementById(FtModel.paint.ins).style.visibility = 'hidden';
+      }
     }
     this.generateMultifasta();
   }
 
+  insertCustom (idElem, idCus) {
+
+    let ft;
+    ft = FtModel.buildCus(this.vlUnp.stUnp, this.vlUnp.endUnp, this.actualPdb, idCus, idElem);
+    this.addCusEntity(ft, idCus);
+    this.featureViewer.emptyFeatures();
+    this.featureViewer.addFeatures(this.featureList);
+    if (ft && ft.data.length > 0) {
+      this.featureViewer.highlightRegion({x: ft.data[ft.data.length - 1].x,
+        y: ft.data[ft.data.length - 1].y}, ft.id);
+    }
+  }
+  hideBrush(st, end, arrCus, idPaint){
+    console.log(idPaint)
+    console.log(arrCus)
+    // checking superposed features
+    // if present, remove paint brush
+    let insert = true;
+
+    for (const j of arrCus) {
+      let c = 0;
+
+      for (const i of arrCus) {
+      console.log(j)
+      console.log(i.x)
+
+      if (i.x >= j.x && i.x <= j.y || i.y >= j.x && i.y <= j.y) {
+
+        c += 1;
+        if (c > 1) {
+          console.log('false')
+          insert = false;
+          break;
+        }
+      }
+    }
+   }
+
+    console.log(insert)
+
+    if(insert){
+      console.log(idPaint)
+      console.log('visible')
+
+      if (document.getElementById(idPaint)) {
+        document.getElementById(idPaint).style.visibility = 'visible';
+      }
+    } else {
+      console.log('dupl')
+
+      document.getElementById(idPaint).style.visibility = 'hidden';
+    }
+
+
+      switch (idPaint) {
+        case FtModel.paint.unit: {
+          if (document.getElementById(idPaint)) {
+            this.lastPaintUnit = document.getElementById(FtModel.paint.unit).style.visibility;
+            if (document.getElementById(FtModel.paint.ins)) {
+              document.getElementById(FtModel.paint.ins).style.visibility = this.lastPaintIns;
+            }
+          }
+          break;
+        }
+        case FtModel.paint.ins: {
+          if (document.getElementById(idPaint)) {
+            this.lastPaintIns = document.getElementById(FtModel.paint.ins).style.visibility;
+            if (document.getElementById(FtModel.paint.unit)) {
+              document.getElementById(FtModel.paint.unit).style.visibility = this.lastPaintUnit;
+            }
+
+          }
+          break;
+        }
+      }
+  }
   removeCustom(type: string) {
 
     if (this.featureList.length <= 0) {
       Log.w(1, 'nothing to draw on.');
       return;
     }
-
+    let st;
+    let end;
     if (type === 'selected') {
-
+      st = this.lastSelectCustom.x;
+      end = this.lastSelectCustom.y;
       for (let i = 0; i < this.multicustom.length; i++) {
         if (this.multicustom[i].id === this.lastSelectCustom.id) {
           this.multicustom.splice(i, 1);
@@ -424,11 +493,19 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
 
       switch (this.lastSelectCustom.feature) {
         case FtModel.custom.idUnit:{
-          this.removeSelected(this.lastSelectCustom, FtModel.custom.idUnit);
+          this.removeSelected(this.lastSelectCustom, FtModel.custom.idUnit, this.unitsCus);
+          this.featureViewer.emptyFeatures();
+          this.featureViewer.addFeatures(this.featureList);
+          this.hideBrush(st, end, this.unitsCus, FtModel.paint.unit);
+          this.hideBrush(st, end, this.insCus, FtModel.paint.ins);
           break;
         }
         case FtModel.custom.idIns:{
-          this.removeSelected(this.lastSelectCustom, FtModel.custom.idIns);
+          this.removeSelected(this.lastSelectCustom, FtModel.custom.idIns, this.insCus);
+          this.featureViewer.emptyFeatures();
+          this.featureViewer.addFeatures(this.featureList);
+          this.hideBrush(st, end, this.unitsCus, FtModel.paint.unit);
+          this.hideBrush(st, end, this.insCus, FtModel.paint.ins);
           break;
         }
       }
@@ -437,18 +514,31 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       if(!last) {
         return;
       }
+      st = last.x;
+      end = last.y;
       switch (last.feature) {
-        case FtModel.feature.unit:{
-          this.removeSelected(last, FtModel.custom.idUnit);
+        case FtModel.custom.idUnit:{
+          this.removeSelected(last, FtModel.custom.idUnit, this.unitsCus);
+          this.featureViewer.emptyFeatures();
+          this.featureViewer.addFeatures(this.featureList);
+          this.hideBrush(st, end, this.unitsCus, FtModel.paint.unit);
+          this.hideBrush(st, end, this.insCus, FtModel.paint.ins);
+
           break;
         }
-        case FtModel.feature.insertion:{
-          this.removeSelected(last, FtModel.custom.idIns);
+        case FtModel.custom.idIns:{
+          this.removeSelected(last, FtModel.custom.idIns, this.insCus);
+          this.featureViewer.emptyFeatures();
+          this.featureViewer.addFeatures(this.featureList);
+          this.hideBrush(st, end, this.unitsCus, FtModel.paint.unit);
+          this.hideBrush(st, end, this.insCus, FtModel.paint.ins);
           break;
         }
       }
     } else {
       this.multicustom = [];
+      this.unitsCus = [];
+      this.insCus = [];
       this.stv.user = [];
       this.stvComp.deleteColor(this.arrEntryStv, this.stv);
       this.sqv.user = [];
@@ -460,18 +550,25 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         }
       }
     }
-    this.featureViewer.emptyFeatures();
-    this.featureViewer.addFeatures(this.featureList);
+    if (this.unitsCus.length <= 1) {
+      if (document.getElementById(FtModel.paint.unit)) {
+        document.getElementById(FtModel.paint.unit).style.visibility = 'hidden';
+      }
+    }
+    if (this.insCus.length <= 1) {
+      if (document.getElementById(FtModel.paint.ins)) {
+        document.getElementById(FtModel.paint.ins).style.visibility = 'hidden';
+      }
+    }
     this.generateMultifasta();
   }
 
-  removeSelected(element, check) {
+  removeSelected(element, check, arrCus) {
     let flag = false;
     for (const ft in this.featureList) {
       if (this.featureList[ft].id === check) {
         flag = true;
         for (let i = 0; i < this.featureList[ft].data.length; i++) {
-
           if (this.featureList[ft].data[i].label === element.id) {
             this.featureList[ft].data.splice(i, 1);
             i--;
@@ -496,6 +593,14 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         i--;
       }
     }
+
+    for (let i = 0; i < arrCus.length; i++) {
+      if (arrCus[i].id === element.id) {
+        arrCus.splice(i, 1);
+        i--;
+      }
+    }
+    console.log(arrCus)
     this.stvComp.deleteColor(this.arrEntryStv, this.stv);
     this.updateInput();
   }
@@ -699,7 +804,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   }
 
   selectedFeature (event: any) {
-    this.feature = event.target.value;
+    this.feature = 'custom-' + event.target.value;
   }
 
   selectChangeHandler(event: any) {

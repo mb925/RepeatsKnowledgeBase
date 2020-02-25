@@ -32,15 +32,16 @@ export class FtModel {
   };
   static idCustomUnit = 0;
   static idCustomIns = 0;
-  static feature = {
-    unit: 'unit',
-    insertion: 'insertion'
-  };
 
   static drop = {
     one: 'drop-One',
     two: 'drop-Two',
     three: 'drop-Three'
+  };
+
+  static paint = {
+    unit: 'c-paint-custom-unit',
+    ins: 'c-paint-custom-insertion'
   };
 
   /** Custom entities */
@@ -145,11 +146,11 @@ export class FtModel {
     }
 
     if (convUnits.length > 0) {
-      result.push(FtModel.buildEntityFt(FtModel.feature.unit, pdb, chainInfo.chain_id, convUnits));
+      result.push(FtModel.buildEntityFt(FtModel.custom.idUnit, pdb, chainInfo.chain_id, convUnits));
     }
 
     if (convIns.length > 0) {
-      result.push(FtModel.buildEntityFt(FtModel.feature.insertion, pdb, chainInfo.chain_id, convIns));
+      result.push(FtModel.buildEntityFt(FtModel.custom.idIns, pdb, chainInfo.chain_id, convIns));
     }
     return [result, flagAdditional];
 
@@ -160,7 +161,7 @@ export class FtModel {
 
     let label;
     switch (feature) {
-      case this.feature.unit: {
+      case this.custom.idUnit: {
         label = `u-${pdb}-${chain}`;
         let flag = true;
         if (data.length > 1) {
@@ -177,7 +178,7 @@ export class FtModel {
         }
         break;
       }
-      case this.feature.insertion: {
+      case this.custom.idIns: {
         label = `i-${pdb}-${chain}`;
         for (const elem of data) {
           elem.color = this.colorsHex.insertions;
