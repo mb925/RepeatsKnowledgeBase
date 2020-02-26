@@ -409,6 +409,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       this.featureViewer.highlightRegion({x: ft.data[ft.data.length - 1].x,
         y: ft.data[ft.data.length - 1].y}, ft.id);
     }
+
   }
   hideBrush(st, end, arrCus, idPaint){
     console.log(idPaint)

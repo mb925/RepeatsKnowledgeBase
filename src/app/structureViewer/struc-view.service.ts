@@ -59,7 +59,10 @@ export class StrucViewService {
 
       // tslint:disable-next-line:no-non-null-assertion
       this.ltplugin = this.create(document.getElementById('litemol')!);
+
       if(id !== ''){
+
+        // load a pdb molecule
         await this.ltplugin.loadMolecule({
           id: ids,
           url: this.urlLiteMol + ids + this.urlLiteMol2,
