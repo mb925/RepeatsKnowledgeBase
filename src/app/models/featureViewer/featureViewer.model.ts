@@ -34,9 +34,12 @@ export class FtModel {
   static idCustomIns = 0;
 
   static drop = {
-    one: 'drop-One',
-    two: 'drop-Two',
-    three: 'drop-Three'
+    unitOne: 'custom-unit-drop-one',
+    unitTwo: 'custom-unit-drop-two',
+    unitThree: 'custom-unit-drop-three',
+    insOne: 'custom-insertion-drop-one',
+    insTwo: 'custom-insertion-drop-two',
+    insThree: 'custom-insertion-drop-three'
   };
 
   static paint = {
@@ -57,17 +60,17 @@ export class FtModel {
       isOpen: true,
       sidebar: [
         {
-          id: this.drop.one,
+          id: feature + '-drop-one',
           tooltip: actualPdb,
           content: `<i class="fa fa-tint" id="cOne"></i>`,
         },
         {
-          id: this.drop.two,
+          id: feature + 'drop-two',
           content: `<i class="fa fa-tint" id="cTwo"></i>`
 
         },
         {
-          id: this.drop.three,
+          id: feature + 'drop-three',
           content: `<i class="fa fa-tint" id="cThree"></i>`
         },
         {
@@ -269,4 +272,28 @@ export class FtModel {
     return convBound;
   }
 
+
+  public static switchDrop(eventId) {
+    let color;
+    console.log(eventId)
+    console.log(this.drop.unitOne)
+    switch(eventId) {
+
+      case this.drop.unitOne || this.drop.insOne: {
+
+
+        color = this.colorsHex.cOne;
+        break;
+      }
+      case this.drop.unitTwo || this.drop.insTwo: {
+        color = this.colorsHex.cTwo;
+        break;
+      }
+      case this.drop.unitThree || this.drop.insThree: {
+        color = this.colorsHex.custom;
+        break;
+      }
+    }
+    return color;
+  }
 }

@@ -71,8 +71,8 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   error = '';
   unitsCus = [];
   insCus = [];
-  lastPaintUnit = 'visible';
-  lastPaintIns = 'visible';
+  lastVisibilityUnit = 'visible';
+  lastVisibilityIns = 'visible';
 
   ngOnInit(): void {
     this.sqv = { chains: [], units: [], insertions: [], user: []};
@@ -182,11 +182,11 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
   }
 
   paint(event) {
+    console.log(event)
     if (event.detail.id.includes('drop')){
       this.tint(event);
       return;
     }
-
 
     let ch = this.lastClicked[this.lastClicked.length - 1];
     let pdb = this.lastClicked.slice(0, -2);
@@ -241,29 +241,37 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       this.error = 'Click on a custom feature to start (green elements)';
       return;
     }
+    console.log(this.lastSelectCustom)
 
-    // tslint:disable-next-line:prefer-for-of
-    for (let i = 0; i < this.featureList[0].data.length; i++) {
-      if (this.featureList[0].data[i].label === this.lastSelectCustom.pdb
-        && this.featureList[0].data[i].x === this.lastSelectCustom.x
-        && this.featureList[0].data[i].y === this.lastSelectCustom.y) {
-        switch(event.detail.id) {
-          case FtModel.drop.one: {
-            this.featureList[0].data[i].color = FtModel.colorsHex.cOne;
-            break;
-          }
-          case FtModel.drop.two: {
-            this.featureList[0].data[i].color = FtModel.colorsHex.cTwo;
-            break;
-          }
-          case FtModel.drop.three: {
-            this.featureList[0].data[i].color = FtModel.colorsHex.custom;
-            break;
+    switch (this.lastSelectCustom.feature) {
+      case FtModel.custom.idUnit: {
+        for (const ft of this.featureList) {
+          if (ft.id === FtModel.custom.idUnit) {
+            for (let i = 0; i < ft.data.length; i++) {
+              if (ft.data[i].label === this.lastSelectCustom.id) {
+                ft.data[i].color = FtModel.switchDrop(event.detail.id);
+
+                console.log(ft)
+              }
+            }
           }
         }
-
+        break;
+      }
+      case FtModel.custom.idIns: {
+        for (const ft of this.featureList) {
+          if (ft.id === FtModel.custom.idIns) {
+            for (let i = 0; i < ft.data.length; i++) {
+              if (ft.data[i].label === this.lastSelectCustom.id) {
+                ft.data[i].color = FtModel.switchDrop(event.detail.id);
+              }
+            }
+          }
+        }
+        break;
       }
     }
+    // tslint:disable-next-line:prefer-for-of
     document.getElementById('fv').innerHTML = '';
     this.featureViewer = new FeatureViewer(this.currUnp.sequence, '#fv', FtModel.fvOptions);
     this.featureViewer.addFeatures(this.featureList);
@@ -273,41 +281,14 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     for (let i = 0; i < this.stv.user.length; i++) {
       if (this.stv.user[i].start_residue_number === this.lastSelectCustom.x
         &&  this.stv.user[i].end_residue_number === this.lastSelectCustom.y) {
-        switch(event.detail.id) {
-          case FtModel.drop.one: {
-            this.stv.user[i].color = RepKbClModel.hexToRgb(FtModel.colorsHex.cOne);
-            break;
-          }
-          case FtModel.drop.two: {
-            this.stv.user[i].color = RepKbClModel.hexToRgb(FtModel.colorsHex.cTwo);
-            break;
-          }
-          case FtModel.drop.three: {
-            this.stv.user[i].color = RepKbClModel.hexToRgb(FtModel.colorsHex.custom);
-            break;
-          }
-        }
-
+        this.stv.user[i].color = RepKbClModel.hexToRgb(FtModel.switchDrop(event.detail.id));
       }
     }
     // tslint:disable-next-line:prefer-for-of
     for (let i = 0; i < this.sqv.user.length; i++) {
       const reg = this.lastSelectCustom.x + '-' + this.lastSelectCustom.y;
       if (this.sqv.user[i].reg === reg) {
-        switch(event.detail.id) {
-          case FtModel.drop.one: {
-            this.sqv.user[i].cl = FtModel.colorsHex.cOne;
-            break;
-          }
-          case FtModel.drop.two: {
-            this.sqv.user[i].cl = FtModel.colorsHex.cTwo;
-            break;
-          }
-          case FtModel.drop.three: {
-            this.sqv.user[i].cl = FtModel.colorsHex.custom;
-            break;
-          }
-        }
+        this.sqv.user[i].cl = FtModel.switchDrop(event.detail.id);
       }
     }
     this.stvComp.deleteColor(this.arrEntryStv, this.stv);
@@ -370,14 +351,14 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         FtModel.idCustomUnit += 1;
         this.unitsCus.push({x:+this.vlUnp.stUnp, y:+this.vlUnp.endUnp, id: FtModel.idCustomUnit});
         this.insertCustom(FtModel.idCustomUnit, FtModel.custom.idUnit);
-        this.hideBrush(this.vlUnp.stUnp, this.vlUnp.endUnp, this.unitsCus, FtModel.paint.unit);
+        [this.lastVisibilityUnit, this.lastVisibilityIns] = RepKbClModel.hideBrush(this.vlUnp.stUnp, this.vlUnp.endUnp, this.unitsCus, FtModel.paint.unit);
         break;
       }
       case FtModel.custom.idIns: {
         FtModel.idCustomIns += 1;
         this.insCus.push({x:+this.vlUnp.stUnp, y:+this.vlUnp.endUnp, id: FtModel.idCustomIns});
         this.insertCustom(FtModel.idCustomIns, FtModel.custom.idIns);
-        this.hideBrush(this.vlUnp.stUnp, this.vlUnp.endUnp, this.insCus, FtModel.paint.ins);
+        [this.lastVisibilityUnit, this.lastVisibilityIns] = RepKbClModel.hideBrush(this.vlUnp.stUnp, this.vlUnp.endUnp, this.insCus, FtModel.paint.ins);
         break;
       }
     }
@@ -408,60 +389,6 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     }
 
   }
-  hideBrush(st, end, arrCus, idPaint){
-
-    // checking superposed features
-    // if present, remove paint brush
-    let insert = true;
-
-    for (const j of arrCus) {
-      let c = 0;
-
-      for (const i of arrCus) {
-
-      if (i.x >= j.x && i.x <= j.y || i.y >= j.x && i.y <= j.y) {
-
-        c += 1;
-        if (c > 1) {
-          console.log('false')
-          insert = false;
-          break;
-        }
-      }
-    }
-   }
-
-    if(insert){
-
-      if (document.getElementById(idPaint)) {
-        document.getElementById(idPaint).style.visibility = 'visible';
-      }
-    } else {
-      document.getElementById(idPaint).style.visibility = 'hidden';
-    }
-
-
-      switch (idPaint) {
-        case FtModel.paint.unit: {
-          if (document.getElementById(idPaint)) {
-            this.lastPaintUnit = document.getElementById(FtModel.paint.unit).style.visibility;
-            if (document.getElementById(FtModel.paint.ins)) {
-              document.getElementById(FtModel.paint.ins).style.visibility = this.lastPaintIns;
-            }
-          }
-          break;
-        }
-        case FtModel.paint.ins: {
-          if (document.getElementById(idPaint)) {
-            this.lastPaintIns = document.getElementById(FtModel.paint.ins).style.visibility;
-            if (document.getElementById(FtModel.paint.unit)) {
-              document.getElementById(FtModel.paint.unit).style.visibility = this.lastPaintUnit;
-            }
-          }
-          break;
-        }
-      }
-  }
   removeCustom(type: string) {
 
     if (this.featureList.length <= 0) {
@@ -478,25 +405,8 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
           this.multicustom.splice(i, 1);
         }
       }
+      this.removeFeature(st, end, this.lastSelectCustom.feature, this.lastSelectCustom);
 
-      switch (this.lastSelectCustom.feature) {
-        case FtModel.custom.idUnit:{
-          this.removeSelected(this.lastSelectCustom, FtModel.custom.idUnit, this.unitsCus);
-          this.featureViewer.emptyFeatures();
-          this.featureViewer.addFeatures(this.featureList);
-          this.hideBrush(st, end, this.unitsCus, FtModel.paint.unit);
-          this.hideBrush(st, end, this.insCus, FtModel.paint.ins);
-          break;
-        }
-        case FtModel.custom.idIns:{
-          this.removeSelected(this.lastSelectCustom, FtModel.custom.idIns, this.insCus);
-          this.featureViewer.emptyFeatures();
-          this.featureViewer.addFeatures(this.featureList);
-          this.hideBrush(st, end, this.unitsCus, FtModel.paint.unit);
-          this.hideBrush(st, end, this.insCus, FtModel.paint.ins);
-          break;
-        }
-      }
     } else if (type === 'last') {
       const last = this.multicustom.pop();
       if(!last) {
@@ -504,25 +414,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       }
       st = last.x;
       end = last.y;
-      switch (last.feature) {
-        case FtModel.custom.idUnit:{
-          this.removeSelected(last, FtModel.custom.idUnit, this.unitsCus);
-          this.featureViewer.emptyFeatures();
-          this.featureViewer.addFeatures(this.featureList);
-          this.hideBrush(st, end, this.unitsCus, FtModel.paint.unit);
-          this.hideBrush(st, end, this.insCus, FtModel.paint.ins);
-
-          break;
-        }
-        case FtModel.custom.idIns:{
-          this.removeSelected(last, FtModel.custom.idIns, this.insCus);
-          this.featureViewer.emptyFeatures();
-          this.featureViewer.addFeatures(this.featureList);
-          this.hideBrush(st, end, this.unitsCus, FtModel.paint.unit);
-          this.hideBrush(st, end, this.insCus, FtModel.paint.ins);
-          break;
-        }
-      }
+      this.removeFeature(st, end, last.feature, last);
     } else {
       this.multicustom = [];
       this.unitsCus = [];
@@ -549,6 +441,27 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       }
     }
     this.generateMultifasta();
+  }
+
+  removeFeature (st, end, ft, elem) {
+    switch (ft) {
+      case FtModel.custom.idUnit:{
+        this.removeSelected(elem, FtModel.custom.idUnit, this.unitsCus);
+        this.featureViewer.emptyFeatures();
+        this.featureViewer.addFeatures(this.featureList);
+        [this.lastVisibilityUnit, this.lastVisibilityIns] = RepKbClModel.hideBrush(st, end, this.unitsCus, FtModel.paint.unit);
+        [this.lastVisibilityUnit, this.lastVisibilityIns] = RepKbClModel.hideBrush(st, end, this.insCus, FtModel.paint.ins);
+        break;
+      }
+      case FtModel.custom.idIns:{
+        this.removeSelected(elem, FtModel.custom.idIns, this.insCus);
+        this.featureViewer.emptyFeatures();
+        this.featureViewer.addFeatures(this.featureList);
+        [this.lastVisibilityUnit, this.lastVisibilityIns] = RepKbClModel.hideBrush(st, end, this.unitsCus, FtModel.paint.unit);
+        [this.lastVisibilityUnit, this.lastVisibilityIns] = RepKbClModel.hideBrush(st, end, this.insCus, FtModel.paint.ins);
+        break;
+      }
+    }
   }
 
   removeSelected(element, check, arrCus) {
@@ -677,7 +590,8 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
         return;
       }
 
-      this.lastSelectCustom = {id: r.detail.selectedRegion.label, pdb: r.detail.label, x, y, feature: r.detail.id};
+      [pdb, ch] = this.lastClicked.split('-');
+      this.lastSelectCustom = {id: r.detail.selectedRegion.label, pdb, x, y, feature: r.detail.id};
       label = this.lastClicked;
       label = 'c-' + label;
 

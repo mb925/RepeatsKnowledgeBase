@@ -1,6 +1,64 @@
 import {Stv} from '../interfaces/repKbColors.interface';
+import { FtModel } from './featureViewer/featureViewer.model';
 
 export class RepKbClModel {
+
+  static hideBrush(st, end, arrCus, idPaint){
+
+    // checking superposed features
+    // if present, remove paint brush
+    let insert = true;
+    let lastPaintUnit;
+    let lastPaintIns;
+
+    for (const j of arrCus) {
+      let c = 0;
+
+      for (const i of arrCus) {
+
+        if (i.x >= j.x && i.x <= j.y || i.y >= j.x && i.y <= j.y) {
+
+          c += 1;
+          if (c > 1) {
+            insert = false;
+            break;
+          }
+        }
+      }
+    }
+
+    if(insert){
+      if (document.getElementById(idPaint)) {
+        document.getElementById(idPaint).style.visibility = 'visible';
+      }
+    } else {
+      document.getElementById(idPaint).style.visibility = 'hidden';
+    }
+
+    switch (idPaint) {
+      case FtModel.paint.unit: {
+        if (document.getElementById(idPaint)) {
+          lastPaintUnit = document.getElementById(FtModel.paint.unit).style.visibility;
+          if (document.getElementById(FtModel.paint.ins)) {
+            document.getElementById(FtModel.paint.ins).style.visibility = lastPaintIns;
+          }
+        }
+        break;
+      }
+      case FtModel.paint.ins: {
+        if (document.getElementById(idPaint)) {
+          lastPaintIns = document.getElementById(FtModel.paint.ins).style.visibility;
+          if (document.getElementById(FtModel.paint.unit)) {
+            document.getElementById(FtModel.paint.unit).style.visibility = lastPaintUnit;
+          }
+        }
+        break;
+      }
+    }
+    return [lastPaintUnit, lastPaintIns];
+  }
+
+
 
   static createStvInfo (rgb, chains, ch, st, end) {
     const stvInfo: Stv = {
