@@ -187,35 +187,32 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       return;
     }
 
-    let pdb;
-    let ch;
+
+    let ch = this.lastClicked[this.lastClicked.length - 1];
+    let pdb = this.lastClicked.slice(0, -2);
     this.stv.user = [];
     this.sqv.user = [];
     this.eraseAll();
+
     if (event.detail.id[0] === 'c') {
-      const xy = [];
-      let flag = true;
-      for (const elem of this.featureList[0].data) {
-        for (const i of xy) {
-          if (elem.x === i.x && elem.y === i.y) {
-            flag = false;
+      switch (event.detail.id) {
+        case FtModel.paint.unit: {
+          for (const ft of this.featureList) {
+            if (ft.id === FtModel.custom.idUnit) {
+                this.updateEntity(ft.data, pdb, ch, this.idt.units);
+            }
           }
+          break;
         }
-        if (flag) {
-          xy.push(elem);
+        case FtModel.paint.ins: {
+          for (const ft of this.featureList) {
+            if (ft.id === FtModel.custom.idIns) {
+              this.updateEntity(ft.data, pdb, ch, this.idt.insertions);
+            }
+          }
+          break;
         }
-        flag= true;
       }
-      ch = this.lastClicked[this.lastClicked.length - 1];
-      pdb = this.lastClicked.slice(0, -2);
-      // TODO paint unit
-      // xy should be from featureList insertions
-      // this.updateEntity(xy, pdb, ch, this.idt.insertions);
-      // TODO or paint insertion
-      // xy should be from featureList insertions
-      // this.updateEntity(xy, pdb, ch, this.idt.insertions);
-
-
     } else {
       const name = event.detail.id.substring(2);
       [pdb, ch] = name.split('-');
@@ -412,8 +409,7 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
 
   }
   hideBrush(st, end, arrCus, idPaint){
-    console.log(idPaint)
-    console.log(arrCus)
+
     // checking superposed features
     // if present, remove paint brush
     let insert = true;
@@ -422,8 +418,6 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
       let c = 0;
 
       for (const i of arrCus) {
-      console.log(j)
-      console.log(i.x)
 
       if (i.x >= j.x && i.x <= j.y || i.y >= j.x && i.y <= j.y) {
 
@@ -437,18 +431,12 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
     }
    }
 
-    console.log(insert)
-
     if(insert){
-      console.log(idPaint)
-      console.log('visible')
 
       if (document.getElementById(idPaint)) {
         document.getElementById(idPaint).style.visibility = 'visible';
       }
     } else {
-      console.log('dupl')
-
       document.getElementById(idPaint).style.visibility = 'hidden';
     }
 
@@ -469,7 +457,6 @@ export class RepKBComponent implements OnInit, AfterViewChecked {
             if (document.getElementById(FtModel.paint.unit)) {
               document.getElementById(FtModel.paint.unit).style.visibility = this.lastPaintUnit;
             }
-
           }
           break;
         }
